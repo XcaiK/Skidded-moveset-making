@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moveset Creator · reanim + emotes</title>
+  <title>skidded moveset maker · reanim</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
@@ -59,6 +59,31 @@
       letter-spacing: 0.04em;
       white-space: nowrap;
     }
+    .main-tab-row {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid #222236;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .main-tab {
+      padding: 0.5rem 1.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: transparent;
+      border: 1px solid #222236;
+      border-radius: 8px;
+      color: #505070;
+      cursor: pointer;
+      transition: 0.12s;
+    }
+    .main-tab.active { background: #7c6dfa; border-color: #7c6dfa; color: white; }
+    .main-tab:hover { color: #e2e2f2; border-color: #333350; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
     .card {
       background: #101018;
       border: 1px solid #222236;
@@ -148,6 +173,8 @@
     .btn-purple:hover { background: rgba(167, 139, 250, 0.08); }
     .btn-red { border-color: rgba(248, 113, 113, 0.3); color: #f87171; }
     .btn-red:hover { background: rgba(248, 113, 113, 0.08); }
+    .btn-pink { border-color: rgba(244, 114, 182, 0.35); color: #f472b6; }
+    .btn-pink:hover { background: rgba(244, 114, 182, 0.08); }
     .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
     .toggle-wrap {
       display: flex;
@@ -397,162 +424,190 @@
       <div class="logo">skidded <em>moveset maker</em></div>
       <div class="subhead">creator · reanimate by yel0oo</div>
     </div>
-    <div class="badge">v6 · generator</div>
+    <div class="badge">v6 · dual</div>
   </header>
 
-  <!-- Moveset Info -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#7c6dfa;box-shadow:0 0 8px #7c6dfa"></span><span class="card-title">Moveset Info</span></div>
-    <div class="card-body">
-      <div class="grid-2">
-        <div class="field"><label>Display Name</label><input type="text" id="mName" value="MyMoveset"></div>
-        <div class="field"><label>Internal Name (no spaces)</label><input type="text" id="mInternal" value="mymoveset" oninput="this.value=this.value.replace(/\s/g,'')"></div>
-      </div>
-      <div class="field"><label>Description</label><textarea id="mDesc">work in progress...</textarea></div>
-    </div>
-  </section>
+  <!-- Main Tabs -->
+  <div class="main-tab-row">
+    <button class="main-tab active" id="mt-moveset" onclick="switchMainTab('moveset')">⚔️ Moveset</button>
+    <button class="main-tab" id="mt-emote" onclick="switchMainTab('emote')">💃 Emotes</button>
+  </div>
 
-  <!-- Movement -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Movement</span></div>
-    <div class="card-body">
-      <div class="grid-4">
-        <div class="field"><label>Walk Speed</label><input type="number" id="speedWalk" value="16" min="1"></div>
-        <div class="field"><label>Sprint Speed</label><input type="number" id="speedSprint" value="26" min="1"></div>
-        <div class="field"><label>Jump Power</label><input type="number" id="jumpPower" placeholder="default" step="1"></div>
-        <div class="field"><label>Allow Climbing</label>
-          <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.3rem">
-            <label class="toggle"><input type="checkbox" id="allowClimb" checked><span class="toggle-slider"></span></label>
-            <span style="font-size:0.75rem;color:#9090b8">Enabled</span>
+  <!-- MOVESET TAB -->
+  <div id="tab-moveset" class="tab-content active">
+    <!-- Moveset Info -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#7c6dfa;box-shadow:0 0 8px #7c6dfa"></span><span class="card-title">Moveset Info</span></div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div class="field"><label>Display Name</label><input type="text" id="mName" value="MyMoveset"></div>
+          <div class="field"><label>Internal Name (no spaces)</label><input type="text" id="mInternal" value="mymoveset" oninput="this.value=this.value.replace(/\s/g,'')"></div>
+        </div>
+        <div class="field"><label>Description</label><textarea id="mDesc">work in progress...</textarea></div>
+      </div>
+    </section>
+
+    <!-- Movement -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Movement</span></div>
+      <div class="card-body">
+        <div class="grid-4">
+          <div class="field"><label>Walk Speed</label><input type="number" id="speedWalk" value="16" min="1"></div>
+          <div class="field"><label>Sprint Speed</label><input type="number" id="speedSprint" value="26" min="1"></div>
+          <div class="field"><label>Jump Power</label><input type="number" id="jumpPower" placeholder="default" step="1"></div>
+          <div class="field"><label>Allow Climbing</label>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.3rem">
+              <label class="toggle"><input type="checkbox" id="allowClimb" checked><span class="toggle-slider"></span></label>
+              <span style="font-size:0.75rem;color:#9090b8">Enabled</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Sprint Toggle -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#fbbf24;box-shadow:0 0 8px #fbbf24"></span><span class="card-title">Sprint / Walk Toggle</span></div>
-    <div class="card-body">
-      <div class="toggle-wrap">
-        <label class="toggle"><input type="checkbox" id="sprintOn" onchange="document.getElementById('sprintCfg').style.display=this.checked?'flex':'none'"><span class="toggle-slider"></span></label>
-        <span class="notice">Include sprint toggle button</span>
+    <!-- Sprint Toggle -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#fbbf24;box-shadow:0 0 8px #fbbf24"></span><span class="card-title">Sprint / Walk Toggle</span></div>
+      <div class="card-body">
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="sprintOn" onchange="document.getElementById('sprintCfg').style.display=this.checked?'flex':'none'"><span class="toggle-slider"></span></label>
+          <span class="notice">Include sprint toggle button</span>
+        </div>
+        <div id="sprintCfg" style="display:none;flex-direction:column;gap:0.8rem">
+          <div class="grid-3">
+            <div class="field"><label>Keybind</label><div class="key-picker"><input type="text" id="spKey" value="LeftAlt" readonly onclick="openPicker('spKey')"><button class="btn btn-purple" onclick="openPicker('spKey')">key</button></div></div>
+            <div class="field"><label>Sprint Label</label><input type="text" id="spLS" value="Sprint"></div>
+            <div class="field"><label>Walk Label</label><input type="text" id="spLW" value="Walk"></div>
+          </div>
+          <div class="grid-4">
+            <div class="field"><label>Pos X scale</label><input type="number" id="spPX" value="1" step="0.01"></div>
+            <div class="field"><label>Pos X offset</label><input type="number" id="spOX" value="-260" step="1"></div>
+            <div class="field"><label>Pos Y scale</label><input type="number" id="spPY" value="1" step="0.01"></div>
+            <div class="field"><label>Pos Y offset</label><input type="number" id="spOY" value="-130" step="1"></div>
+          </div>
+        </div>
       </div>
-      <div id="sprintCfg" style="display:none;flex-direction:column;gap:0.8rem">
-        <div class="grid-3">
-          <div class="field"><label>Keybind</label><div class="key-picker"><input type="text" id="spKey" value="LeftAlt" readonly onclick="openPicker('spKey')"><button class="btn btn-purple" onclick="openPicker('spKey')">key</button></div></div>
-          <div class="field"><label>Sprint Label</label><input type="text" id="spLS" value="Sprint"></div>
-          <div class="field"><label>Walk Label</label><input type="text" id="spLW" value="Walk"></div>
+    </section>
+
+    <!-- Overhead Chat Text -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#22d3ee;box-shadow:0 0 8px #22d3ee"></span><span class="card-title">Overhead Chat Text</span></div>
+      <div class="card-body">
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="chatOn"><span class="toggle-slider"></span></label>
+          <span class="notice">Show typed messages as typewriter label via <code>HiddenGui</code></span>
         </div>
         <div class="grid-4">
-          <div class="field"><label>Pos X scale</label><input type="number" id="spPX" value="1" step="0.01"></div>
-          <div class="field"><label>Pos X offset</label><input type="number" id="spOX" value="-260" step="1"></div>
-          <div class="field"><label>Pos Y scale</label><input type="number" id="spPY" value="1" step="0.01"></div>
-          <div class="field"><label>Pos Y offset</label><input type="number" id="spOY" value="-130" step="1"></div>
+          <div class="field"><label>R (0–1)</label><input type="number" id="chatR" value="1" min="0" max="1" step="0.05"></div>
+          <div class="field"><label>G (0–1)</label><input type="number" id="chatG" value="1" min="0" max="1" step="0.05"></div>
+          <div class="field"><label>B (0–1)</label><input type="number" id="chatB" value="1" min="0" max="1" step="0.05"></div>
+          <div class="field"><label>Text Size</label><input type="number" id="chatSz" value="14" min="6" max="60"></div>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Prefix</label><input type="text" id="chatPrefix" value=""></div>
+          <div class="field"><label>Chars/sec</label><input type="number" id="chatCPS" value="30" min="1" max="200"></div>
+          <div class="field"><label>Fade after (s, 0=never)</label><input type="number" id="chatFade" value="3" min="0" step="0.5"></div>
+        </div>
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="chatStroke" checked><span class="toggle-slider"></span></label>
+          <span class="notice">Black text stroke</span>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Overhead Chat Text -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#22d3ee;box-shadow:0 0 8px #22d3ee"></span><span class="card-title">Overhead Chat Text</span></div>
-    <div class="card-body">
-      <div class="toggle-wrap">
-        <label class="toggle"><input type="checkbox" id="chatOn"><span class="toggle-slider"></span></label>
-        <span class="notice">Show typed messages as typewriter label via <code>HiddenGui</code></span>
+    <!-- Hitbox Visualizer -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#f87171;box-shadow:0 0 8px #f87171"></span><span class="card-title">Hitbox Visualizer</span></div>
+      <div class="card-body">
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="hbDebug"><span class="toggle-slider"></span></label>
+          <span class="notice">Add "Hitbox Visual" toggle to config UI — visible ForceField hitboxes</span>
+        </div>
+        <div class="grid-3">
+          <div class="field"><label>Color R</label><input type="number" id="hbColorR" value="0" min="0" max="1" step="0.05"></div>
+          <div class="field"><label>Color G</label><input type="number" id="hbColorG" value="0" min="0" max="1" step="0.05"></div>
+          <div class="field"><label>Color B</label><input type="number" id="hbColorB" value="0" min="0" max="1" step="0.05"></div>
+        </div>
+        <div class="notice">Visual parts use ForceField material, auto-destroy after 1s. Default black matches official style.</div>
       </div>
-      <div class="grid-4">
-        <div class="field"><label>R (0–1)</label><input type="number" id="chatR" value="1" min="0" max="1" step="0.05"></div>
-        <div class="field"><label>G (0–1)</label><input type="number" id="chatG" value="1" min="0" max="1" step="0.05"></div>
-        <div class="field"><label>B (0–1)</label><input type="number" id="chatB" value="1" min="0" max="1" step="0.05"></div>
-        <div class="field"><label>Text Size</label><input type="number" id="chatSz" value="14" min="6" max="60"></div>
-      </div>
-      <div class="grid-3">
-        <div class="field"><label>Prefix</label><input type="text" id="chatPrefix" value=""></div>
-        <div class="field"><label>Chars/sec</label><input type="number" id="chatCPS" value="30" min="1" max="200"></div>
-        <div class="field"><label>Fade after (s, 0=never)</label><input type="number" id="chatFade" value="3" min="0" step="0.5"></div>
-      </div>
-      <div class="toggle-wrap">
-        <label class="toggle"><input type="checkbox" id="chatStroke" checked><span class="toggle-slider"></span></label>
-        <span class="notice">Black text stroke</span>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Hitbox Visualizer -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#f87171;box-shadow:0 0 8px #f87171"></span><span class="card-title">Hitbox Visualizer</span></div>
-    <div class="card-body">
-      <div class="toggle-wrap">
-        <label class="toggle"><input type="checkbox" id="hbDebug"><span class="toggle-slider"></span></label>
-        <span class="notice">Add "Hitbox Visual" toggle to config UI — visible ForceField hitboxes</span>
+    <!-- Modes -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span><span class="card-title">Modes <span style="font-weight:400;color:#505070;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">up to 5</span></span></div>
+      <div class="card-body">
+        <div class="notice">Each mode has its own toggle button, optional transition anim, base anim overrides, and exclusive attacks.</div>
+        <div id="modeList"><div class="empty">No modes yet — click "Add mode".</div></div>
+        <div class="btn-row"><button class="btn btn-purple" onclick="addMode()">+ Add mode</button></div>
       </div>
-      <div class="grid-3">
-        <div class="field"><label>Color R</label><input type="number" id="hbColorR" value="0" min="0" max="1" step="0.05"></div>
-        <div class="field"><label>Color G</label><input type="number" id="hbColorG" value="0" min="0" max="1" step="0.05"></div>
-        <div class="field"><label>Color B</label><input type="number" id="hbColorB" value="0" min="0" max="1" step="0.05"></div>
-      </div>
-      <div class="notice">Visual parts use ForceField material, auto-destroy after 1s. Default black matches official style.</div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Modes -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span><span class="card-title">Modes <span style="font-weight:400;color:#505070;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">up to 5</span></span></div>
-    <div class="card-body">
-      <div class="notice">Each mode has its own toggle button, optional transition anim, base anim overrides, and exclusive attacks.</div>
-      <div id="modeList"><div class="empty">No modes yet — click "Add mode".</div></div>
-      <div class="btn-row"><button class="btn btn-purple" onclick="addMode()">+ Add mode</button></div>
-    </div>
-  </section>
-
-  <!-- Assets (default) -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa"></span><span class="card-title">Default Assets & Attacks</span></div>
-    <div class="card-body">
-      <div class="asset-list" id="assetList"></div>
-      <div class="btn-row">
-        <button class="btn btn-green" onclick="addAsset('base')">+ Base anim</button>
-        <button class="btn btn-purple" onclick="addAsset('action')">+ Attack anim</button>
-        <button class="btn btn-amber" onclick="addAsset('sound')">+ BG sound</button>
+    <!-- Assets (default) -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa"></span><span class="card-title">Default Assets & Attacks</span></div>
+      <div class="card-body">
+        <div class="asset-list" id="assetList"></div>
+        <div class="btn-row">
+          <button class="btn btn-green" onclick="addAsset('base')">+ Base anim</button>
+          <button class="btn btn-purple" onclick="addAsset('action')">+ Attack anim</button>
+          <button class="btn btn-amber" onclick="addAsset('sound')">+ BG sound</button>
+        </div>
+        <div class="notice"><span style="color:#a78bfa">Base</span> — idle/walk/sprint/jump. Expand for loop audio.<br><span style="color:#a78bfa">Attack</span> — ability/attack. Expand for fling, hitbox, audio, button.<br><span style="color:#a78bfa">BG sound</span> — looping music played on Init.</div>
       </div>
-      <div class="notice"><span style="color:#a78bfa">Base</span> — idle/walk/sprint/jump. Expand for loop audio.<br><span style="color:#a78bfa">Attack</span> — ability/attack. Expand for fling, hitbox, audio, button.<br><span style="color:#a78bfa">BG sound</span> — looping music played on Init.</div>
-    </div>
-  </section>
+    </section>
 
-  <!-- EMOTES TAB (New) -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Emotes <span style="font-weight:400;color:#505070;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">Dance modules</span></span></div>
-    <div class="card-body">
-      <div class="notice">Each emote generates a separate dance module .lua file. Fill in name, description, anim file, and optional music.</div>
-      <div id="emoteList"><div class="empty">No emotes yet — click "Add emote".</div></div>
-      <div class="btn-row"><button class="btn btn-green" onclick="addEmote()">+ Add emote</button></div>
-    </div>
-  </section>
+    <!-- Moveset Output -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Generated Moveset Lua</span></div>
+      <div class="card-body">
+        <div class="tab-row">
+          <button class="tab active" id="t-prev" onclick="switchTab('prev')">Preview</button>
+          <button class="tab" id="t-exp" onclick="switchTab('exp')">Export</button>
+        </div>
+        <div id="p-prev">
+          <div class="code-wrap"><pre class="code-out" id="codeOut">-- fill in the form, then click Generate</pre></div>
+          <div class="gen-bar"><button class="btn btn-primary" onclick="generateMoveset()">⚡ Generate Moveset</button></div>
+        </div>
+        <div id="p-exp" style="display:none">
+          <div class="code-wrap"><pre class="code-out" id="codeOut2">-- click Generate Moveset first</pre></div>
+          <div class="gen-bar">
+            <button class="btn btn-primary" onclick="copyMovesetCode()">⎘ Copy</button>
+            <button class="btn btn-green" onclick="downloadMovesetCode()">↓ Download .lua</button>
+            <span class="copy-ok" id="copyMsg" style="display:none">✓ Copied!</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 
-  <!-- Output -->
-  <section class="card">
-    <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Generated Lua</span></div>
-    <div class="card-body">
-      <div class="tab-row">
-        <button class="tab active" id="t-prev" onclick="switchTab('prev')">Preview</button>
-        <button class="tab" id="t-exp" onclick="switchTab('exp')">Export</button>
+  <!-- EMOTE TAB -->
+  <div id="tab-emote" class="tab-content">
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Emotes <span style="font-weight:400;color:#505070;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">Dance modules</span></span></div>
+      <div class="card-body">
+        <div class="notice">Each emote generates a separate dance module .lua file. Fill in name, description, anim file, and optional music.</div>
+        <div id="emoteList"><div class="empty">No emotes yet — click "Add emote".</div></div>
+        <div class="btn-row"><button class="btn btn-pink" onclick="addEmote()">+ Add emote</button></div>
       </div>
-      <div id="p-prev">
-        <div class="code-wrap"><pre class="code-out" id="codeOut">-- fill in the form, then click Generate</pre></div>
-        <div class="gen-bar"><button class="btn btn-primary" onclick="generate()">⚡ Generate</button></div>
-      </div>
-      <div id="p-exp" style="display:none">
-        <div class="code-wrap"><pre class="code-out" id="codeOut2">-- click Generate first</pre></div>
+    </section>
+
+    <!-- Emote Output -->
+    <section class="card">
+      <div class="card-head"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span><span class="card-title">Generated Emote Lua</span></div>
+      <div class="card-body">
+        <div class="notice">Select an emote from the list above, then generate its Lua module.</div>
+        <div class="code-wrap"><pre class="code-out" id="emoteCodeOut">-- add an emote above, then click Generate Emote</pre></div>
         <div class="gen-bar">
-          <button class="btn btn-primary" onclick="copyCode()">⎘ Copy</button>
-          <button class="btn btn-green" onclick="downloadCode()">↓ Download .lua</button>
-          <span class="copy-ok" id="copyMsg" style="display:none">✓ Copied!</span>
+          <button class="btn btn-pink" onclick="generateEmote()">⚡ Generate Selected Emote</button>
+          <button class="btn btn-primary" onclick="copyEmoteCode()">⎘ Copy</button>
+          <button class="btn btn-green" onclick="downloadEmoteCode()">↓ Download .lua</button>
+          <span class="copy-ok" id="emoteCopyMsg" style="display:none">✓ Copied!</span>
         </div>
+        <div class="notice" style="margin-top:0.5rem">Select an emote by clicking on its row, then generate.</div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
+
 </div>
 
 <!-- Key Picker Modal -->
@@ -587,6 +642,9 @@
   let modes = [];
   let emotes = [];
   let nextId = 0;
+  let selectedEmoteId = null;
+  let _movesetCode = '';
+  let _emoteCode = '';
   const uid = () => ++nextId;
 
   // helpers
@@ -598,6 +656,14 @@
   const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const escLua = s => (s||'').replace(/"/g,'\\"');
   const san = s => (s||'').replace(/[^a-zA-Z0-9_]/g,'_') || 'x';
+
+  // -------- MAIN TAB SWITCHING --------
+  function switchMainTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.main-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('mt-' + tab).classList.add('active');
+  }
 
   // -------- KEY PICKER --------
   let _pickerTarget = null;
@@ -888,8 +954,9 @@
     });
     renderEmotes();
   }
-  function removeEmote(id) { emotes = emotes.filter(e => e.id !== id); renderEmotes(); }
+  function removeEmote(id) { emotes = emotes.filter(e => e.id !== id); if (selectedEmoteId === id) selectedEmoteId = null; renderEmotes(); }
   function setEmote(id, k, v) { const e = emotes.find(x => x.id === id); if (e) e[k] = v; }
+  function selectEmote(id) { selectedEmoteId = id; renderEmotes(); }
 
   function renderEmotes() {
     const el = $('emoteList');
@@ -898,34 +965,36 @@
     emotes.forEach(e => {
       const div = document.createElement('div');
       div.className = 'asset-row';
+      if (selectedEmoteId === e.id) div.style.borderColor = '#f472b6';
+      div.style.cursor = 'pointer';
+      div.onclick = () => selectEmote(e.id);
       div.innerHTML = `
         <div class="asset-row-top">
-          <input type="text" placeholder="Emote name" value="${esc(e.name)}" oninput="setEmote(${e.id},'name',this.value)" style="flex:1;min-width:80px">
-          <input type="text" placeholder="Description" value="${esc(e.description)}" oninput="setEmote(${e.id},'description',this.value)" style="flex:1;min-width:80px">
-          <input type="text" placeholder="Anim file .anim" value="${esc(e.animFile)}" oninput="setEmote(${e.id},'animFile',this.value)" style="flex:1;min-width:90px">
+          <input type="text" placeholder="Emote name" value="${esc(e.name)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'name',this.value)" style="flex:1;min-width:80px">
+          <input type="text" placeholder="Description" value="${esc(e.description)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'description',this.value)" style="flex:1;min-width:80px">
+          <input type="text" placeholder="Anim file .anim" value="${esc(e.animFile)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'animFile',this.value)" style="flex:1;min-width:90px">
           <span class="badge badge-emote">emote</span>
-          <button class="btn btn-red" onclick="removeEmote(${e.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
+          <button class="btn btn-red" onclick="event.stopPropagation();removeEmote(${e.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
         </div>
         <div class="asset-body open" style="display:flex">
           <div class="grid-2">
-            <div class="field"><label>Music file (mp3)</label><input type="text" placeholder="dance.mp3" value="${esc(e.musicFile)}" oninput="setEmote(${e.id},'musicFile',this.value)"></div>
-            <div class="field"><label>Music description</label><input type="text" placeholder="beat" value="${esc(e.musicDesc)}" oninput="setEmote(${e.id},'musicDesc',this.value)"></div>
+            <div class="field"><label>Music file (mp3)</label><input type="text" placeholder="dance.mp3" value="${esc(e.musicFile)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'musicFile',this.value)"></div>
+            <div class="field"><label>Music description</label><input type="text" placeholder="beat" value="${esc(e.musicDesc)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'musicDesc',this.value)"></div>
           </div>
           <div class="grid-3">
-            <div class="field"><label>Volume</label><input type="number" step="0.05" min="0" max="1" value="${e.volume}" oninput="setEmote(${e.id},'volume',this.value)"></div>
-            <div class="field"><label>Start time (s)</label><input type="number" step="0.5" min="0" value="${e.startTime}" oninput="setEmote(${e.id},'startTime',this.value)"></div>
-            <div class="field"><label>End time (s)</label><input type="number" step="0.5" min="0" value="${e.endTime}" oninput="setEmote(${e.id},'endTime',this.value)"></div>
+            <div class="field"><label>Volume</label><input type="number" step="0.05" min="0" max="1" value="${e.volume}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'volume',this.value)"></div>
+            <div class="field"><label>Start time (s)</label><input type="number" step="0.5" min="0" value="${e.startTime}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'startTime',this.value)"></div>
+            <div class="field"><label>End time (s)</label><input type="number" step="0.5" min="0" value="${e.endTime}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'endTime',this.value)"></div>
           </div>
-          <div class="notice">Generates a dance module: <code>UhhhhhhReanim/Modules/&lt;name&gt;.lua</code></div>
+          <div class="notice">Click row to select, then generate.</div>
         </div>
       `;
       el.appendChild(div);
     });
   }
 
-  // -------- GENERATE (only moveset, emotes are separate) --------
-  let _code = '';
-  function generate() {
+  // -------- GENERATE MOVESET --------
+  function generateMoveset() {
     // sync key pickers
     actionAssets().forEach(a => { const e = document.getElementById('ak_'+a.id); if (e) a.key = e.value || a.key; });
     modes.forEach(mo => {
@@ -1542,17 +1611,17 @@
     ln('');
     ln('return modules');
 
-    _code = L.join('\n');
+    _movesetCode = L.join('\n');
 
     // Display moveset in preview
-    $('codeOut').textContent = _code;
-    $('codeOut2').textContent = _code;
+    $('codeOut').textContent = _movesetCode;
+    $('codeOut2').textContent = _movesetCode;
     $('codeOut2').style.color = '';
   }
 
-  function copyCode() {
-    if (!_code) generate();
-    navigator.clipboard.writeText(_code).then(() => showMsg('✓ Copied!')).catch(() => {
+  function copyMovesetCode() {
+    if (!_movesetCode) generateMoveset();
+    navigator.clipboard.writeText(_movesetCode).then(() => showMsg('✓ Copied!')).catch(() => {
       const el = $('codeOut2');
       const r = document.createRange(); r.selectNodeContents(el);
       const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
@@ -1560,12 +1629,106 @@
     });
   }
   function showMsg(t) { const m = $('copyMsg'); m.textContent = t; m.style.display = ''; setTimeout(() => m.style.display = 'none', 2800); }
-  function downloadCode() {
-    if (!_code) generate();
+  function downloadMovesetCode() {
+    if (!_movesetCode) generateMoveset();
     const int = val('mInternal').trim().replace(/\s/g,'') || 'mymoveset';
-    const b = new Blob([_code], {type: 'text/plain'});
+    const b = new Blob([_movesetCode], {type: 'text/plain'});
     const u = URL.createObjectURL(b);
     const a = document.createElement('a'); a.href = u; a.download = int + '.lua'; a.click();
+    URL.revokeObjectURL(u);
+  }
+
+  // -------- GENERATE EMOTE --------
+  function generateEmote() {
+    if (!selectedEmoteId) {
+      $('emoteCodeOut').textContent = '-- Please select an emote from the list above first.';
+      return;
+    }
+    const e = emotes.find(x => x.id === selectedEmoteId);
+    if (!e) {
+      $('emoteCodeOut').textContent = '-- Selected emote not found.';
+      return;
+    }
+
+    const ename = san(e.name || 'emote');
+    const fname = e.animFile || 'Rock.anim';
+    const mfile = e.musicFile || 'dance.mp3';
+    const mdesc = e.musicDesc || e.description || 'dance';
+    const vol = parseFloat(e.volume) || 0.8;
+    const st = parseFloat(e.startTime) || 0;
+    const et = parseFloat(e.endTime) || 45.5;
+
+    let lines = [];
+    lines.push('-- ' + ename + '.lua');
+    lines.push('-- Generated by Moveset Creator v6 (Emote)');
+    lines.push('-- Place in: UhhhhhhReanim/Modules/' + ename + '.lua');
+    lines.push('');
+    lines.push('local modules = {}');
+    lines.push('');
+    lines.push('table.insert(modules, function()');
+    lines.push('    local m = {}');
+    lines.push('    m.ModuleType  = "DANCE"');
+    lines.push('    m.Name        = "' + escLua(e.name || 'Emote') + '"');
+    lines.push('    m.Description = "' + escLua(e.description || '') + '"');
+    lines.push('    m.Assets = {"' + fname + '", "' + mfile + '"}');
+    lines.push('');
+    lines.push('    m.Config = function(parent)');
+    lines.push('        Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)');
+    lines.push('    end');
+    lines.push('');
+    lines.push('    m.SaveConfig = function() return {} end');
+    lines.push('    m.LoadConfig  = function(save) end');
+    lines.push('');
+    lines.push('    local animator = nil');
+    lines.push('    local start    = 0');
+    lines.push('');
+    lines.push('    m.Init = function(figure)');
+    lines.push('        SetOverrideDanceMusic(AssetGetContentId("' + mfile + '"), "' + escLua(mdesc) + '", ' + vol + ', NumberRange.new(' + st + ', ' + et + '))');
+    lines.push('');
+    lines.push('        start           = os.clock()');
+    lines.push('        animator        = AnimLib.Animator.new()');
+    lines.push('        animator.rig    = figure');
+    lines.push('        animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("' + fname + '"))');
+    lines.push('        animator.looped = true');
+    lines.push('        animator.speed  = 1');
+    lines.push('    end');
+    lines.push('');
+    lines.push('    m.Update = function(dt, figure)');
+    lines.push('        animator:Step(os.clock() - start)');
+    lines.push('    end');
+    lines.push('');
+    lines.push('    m.Destroy = function(figure)');
+    lines.push('        animator = nil');
+    lines.push('    end');
+    lines.push('');
+    lines.push('    return m');
+    lines.push('end)');
+    lines.push('');
+    lines.push('return modules');
+
+    _emoteCode = lines.join('\n');
+    $('emoteCodeOut').textContent = _emoteCode;
+  }
+
+  function copyEmoteCode() {
+    if (!_emoteCode) { generateEmote(); if (!_emoteCode) return; }
+    navigator.clipboard.writeText(_emoteCode).then(() => {
+      const m = $('emoteCopyMsg'); m.textContent = '✓ Copied!'; m.style.display = ''; setTimeout(() => m.style.display = 'none', 2800);
+    }).catch(() => {
+      const el = $('emoteCodeOut');
+      const r = document.createRange(); r.selectNodeContents(el);
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      const m = $('emoteCopyMsg'); m.textContent = 'Selected — Ctrl+C'; m.style.display = ''; setTimeout(() => m.style.display = 'none', 2800);
+    });
+  }
+
+  function downloadEmoteCode() {
+    if (!_emoteCode) { generateEmote(); if (!_emoteCode) return; }
+    const e = emotes.find(x => x.id === selectedEmoteId);
+    const ename = e ? san(e.name || 'emote') : 'emote';
+    const b = new Blob([_emoteCode], {type: 'text/plain'});
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a'); a.href = u; a.download = ename + '.lua'; a.click();
     URL.revokeObjectURL(u);
   }
 
