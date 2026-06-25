@@ -3,625 +3,659 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>skidded moveset maker · reanim</title>
+  <title>Moveset Creator · reanim</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Reset & Base Variables */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+      --bg-main: #0c0d12;
+      --bg-window: #13151f;
+      --bg-sidebar: #171a26;
+      --bg-element: #1c1f30;
+      --bg-element-hover: #23273c;
+      --accent: #5865f2;
+      --accent-hover: #4752c4;
+      --text-main: #f2f3f5;
+      --text-muted: #949ba4;
+      --border-color: rgba(255, 255, 255, 0.05);
+    }
+
     body {
-      background: #080810;
-      color: #e2e2f2;
-      font-family: 'JetBrains Mono', monospace;
-      min-height: 100vh;
-      padding: 2rem 1.5rem 4rem;
+      background-color: var(--bg-main);
       display: flex;
       justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-main);
+      padding: 20px;
     }
-    .app {
-      max-width: 1040px;
-      width: 100%;
+
+    /* Window Layout */
+    .window {
+      width: 1400px;
+      max-width: 98vw;
+      max-height: 95vh;
+      background: var(--bg-window);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
       display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-    .header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      padding-bottom: 1.2rem;
-      border-bottom: 1px solid #222236;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .header-left { display: flex; flex-direction: column; }
-    .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 2.2rem;
-      letter-spacing: -0.02em;
-      line-height: 1;
-    }
-    .logo em { color: #a78bfa; font-style: normal; }
-    .subhead {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: #505070;
-      margin-top: 0.2rem;
-    }
-    .badge {
-      background: rgba(167, 139, 250, 0.12);
-      border: 1px solid rgba(167, 139, 250, 0.25);
-      border-radius: 6px;
-      padding: 0.2rem 0.9rem;
-      font-size: 0.7rem;
-      color: #a78bfa;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
-    .main-tab-row {
-      display: flex;
-      gap: 0.5rem;
-      border-bottom: 1px solid #222236;
-      padding-bottom: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .main-tab {
-      padding: 0.5rem 1.5rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      font-family: 'Syne', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: transparent;
-      border: 1px solid #222236;
-      border-radius: 8px;
-      color: #505070;
-      cursor: pointer;
-      transition: 0.12s;
-    }
-    .main-tab.active { background: #7c6dfa; border-color: #7c6dfa; color: white; }
-    .main-tab:hover { color: #e2e2f2; border-color: #333350; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .card {
-      background: #101018;
-      border: 1px solid #222236;
-      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
       overflow: hidden;
     }
-    .card-head {
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 200px;
+      min-width: 200px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    .brand {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      padding: 0.6rem 1rem;
-      background: #181826;
-      border-bottom: 1px solid #222236;
+      gap: 10px;
+      padding-left: 8px;
     }
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
+
+    .brand-logo {
+      color: var(--accent);
+      font-size: 1.2rem;
     }
-    .card-title {
-      font-family: 'Syne', sans-serif;
+
+    .brand-name {
+      font-size: 1.1rem;
       font-weight: 600;
-      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .brand-sub {
+      font-size: 0.6rem;
+      color: var(--text-muted);
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #9090b8;
+      margin-top: 2px;
     }
-    .card-body {
-      padding: 1rem 1.2rem;
+
+    .nav-links {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 4px;
     }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
-    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.7rem; }
-    @media (max-width: 700px) { .grid-4 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 500px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
-    .field { display: flex; flex-direction: column; gap: 0.2rem; }
-    .field > label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #505070;
-    }
-    input, select, textarea {
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 12px;
+      text-align: left;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
       width: 100%;
-      padding: 0.5rem 0.7rem;
-      font-size: 0.8rem;
-      font-family: 'JetBrains Mono', monospace;
-      background: #080810;
-      border: 1px solid #222236;
-      border-radius: 6px;
-      color: #e2e2f2;
-      outline: none;
-      transition: border 0.12s;
     }
-    input:focus, select:focus, textarea:focus { border-color: #7c6dfa; }
-    textarea { resize: vertical; min-height: 48px; line-height: 1.5; }
-    select option { background: #181826; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.4rem 0.9rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      font-family: 'JetBrains Mono', monospace;
-      background: #181826;
-      border: 1px solid #222236;
-      border-radius: 6px;
-      color: #9090b8;
-      cursor: pointer;
-      transition: all 0.12s;
-      white-space: nowrap;
-    }
-    .btn:hover { border-color: #333350; color: #e2e2f2; background: #1e1e2e; }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary { background: #7c6dfa; border-color: #7c6dfa; color: white; }
-    .btn-primary:hover { background: #a78bfa; border-color: #a78bfa; color: white; }
-    .btn-green { border-color: rgba(52, 211, 153, 0.35); color: #34d399; }
-    .btn-green:hover { background: rgba(52, 211, 153, 0.08); }
-    .btn-amber { border-color: rgba(251, 191, 36, 0.3); color: #fbbf24; }
-    .btn-amber:hover { background: rgba(251, 191, 36, 0.08); }
-    .btn-purple { border-color: rgba(167, 139, 250, 0.35); color: #a78bfa; }
-    .btn-purple:hover { background: rgba(167, 139, 250, 0.08); }
-    .btn-red { border-color: rgba(248, 113, 113, 0.3); color: #f87171; }
-    .btn-red:hover { background: rgba(248, 113, 113, 0.08); }
-    .btn-pink { border-color: rgba(244, 114, 182, 0.35); color: #f472b6; }
-    .btn-pink:hover { background: rgba(244, 114, 182, 0.08); }
-    .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-    }
-    .toggle {
-      position: relative;
-      width: 36px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .toggle-slider {
-      position: absolute;
-      inset: 0;
-      background: #333350;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .toggle-slider::before {
-      content: '';
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      left: 3px;
-      top: 3px;
-      background: #505070;
-      border-radius: 50%;
-      transition: 0.15s;
-    }
-    .toggle input:checked + .toggle-slider { background: #7c6dfa; }
-    .toggle input:checked + .toggle-slider::before { transform: translateX(16px); background: white; }
-    .notice {
-      font-size: 0.75rem;
-      color: #505070;
-      line-height: 1.6;
-    }
-    .notice code {
-      color: #a78bfa;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-    }
-    .code-wrap {
-      background: #080810;
-      border: 1px solid #222236;
-      border-radius: 10px;
-      overflow: auto;
-    }
-    .code-out {
-      padding: 1rem;
-      font-size: 0.75rem;
-      line-height: 1.7;
-      white-space: pre;
-      max-height: 480px;
-      overflow: auto;
-      color: #c9d1d9;
-      tab-size: 4;
-    }
-    .code-out::-webkit-scrollbar { width: 5px; height: 5px; }
-    .code-out::-webkit-scrollbar-thumb { background: #333350; border-radius: 4px; }
-    .tab-row { display: flex; gap: 0.3rem; }
-    .tab {
-      padding: 0.3rem 1rem;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border: 1px solid #222236;
-      border-radius: 6px;
-      background: transparent;
-      color: #505070;
-      cursor: pointer;
-      transition: 0.12s;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .tab.active { background: #7c6dfa; border-color: #7c6dfa; color: white; }
-    .tab:hover { color: #e2e2f2; }
-    .gen-bar { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; margin-top: 0.6rem; }
-    .copy-ok { color: #34d399; font-size: 0.75rem; }
-    .empty {
-      padding: 1.2rem;
+
+    .nav-item i {
+      width: 18px;
       text-align: center;
-      color: #505070;
-      border: 1px dashed #222236;
-      border-radius: 8px;
-      font-size: 0.8rem;
     }
-    .asset-list { display: flex; flex-direction: column; gap: 0.5rem; }
-    .asset-row {
-      background: #181826;
-      border: 1px solid #222236;
-      border-radius: 10px;
-      overflow: hidden;
+
+    .nav-item:hover {
+      background: var(--bg-element);
+      color: var(--text-main);
     }
-    .asset-row-top {
+
+    .nav-item.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Main Content Styling */
+    .main-content {
+      flex: 1;
+      padding: 20px 24px;
       display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      max-height: 95vh;
+    }
+
+    .content-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .content-header p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .content-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Interactive Elements (Buttons, Toggles, Sliders) */
+    .element {
+      background: var(--bg-element);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.8rem;
+      transition: background 0.2s ease, transform 0.1s ease;
+      gap: 12px;
       flex-wrap: wrap;
     }
-    .asset-row-top input, .asset-row-top select { font-size: 0.75rem; padding: 0.3rem 0.6rem; flex: 1; min-width: 70px; }
+
+    .element:hover {
+      background: var(--bg-element-hover);
+    }
+
+    .element-info {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .element-info h3 {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 2px;
+      color: var(--text-main);
+    }
+
+    .element-info p {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .element-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Action Button */
+    .action-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .action-btn:hover {
+      background: var(--accent-hover);
+    }
+    
+    .action-btn-secondary {
+      background: var(--bg-element);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    
+    .action-btn-secondary:hover {
+      background: var(--bg-element-hover);
+    }
+    
+    .action-btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+    
+    .action-btn-danger:hover {
+      background: #c0392b;
+    }
+    
+    .action-btn-success {
+      background: #2ecc71;
+      color: white;
+    }
+    
+    .action-btn-success:hover {
+      background: #27ae60;
+    }
+
+    /* Smooth Switch (Toggle) */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #2e3343;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Custom Range Slider */
+    .range-slider {
+      -webkit-appearance: none;
+      width: 100px;
+      height: 6px;
+      background: #2e3343;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    
+    .range-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Input fields */
+    .field-input {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border 0.2s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-width: 120px;
+    }
+
+    .field-input:focus {
+      border-color: var(--accent);
+    }
+    
+    .field-input-sm {
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      min-width: 80px;
+    }
+    
+    .field-input-xs {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      min-width: 60px;
+      width: auto;
+    }
+    
+    select.field-input {
+      cursor: pointer;
+    }
+
+    /* Badges */
     .badge {
       font-size: 0.55rem;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      padding: 0.1rem 0.6rem;
+      padding: 2px 10px;
       border-radius: 4px;
       white-space: nowrap;
+      display: inline-block;
     }
-    .badge-base { background: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
-    .badge-action { background: rgba(124, 109, 250, 0.12); color: #a78bfa; border: 1px solid rgba(124, 109, 250, 0.2); }
-    .badge-sound { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
-    .badge-mode-atk { background: rgba(244, 114, 182, 0.12); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.2); }
-    .badge-emote { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+    .badge-base { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.2); }
+    .badge-action { background: rgba(88, 101, 242, 0.15); color: var(--accent); border: 1px solid rgba(88, 101, 242, 0.2); }
+    .badge-sound { background: rgba(241, 196, 15, 0.15); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.2); }
+    .badge-mode { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.2); }
+    .badge-mode-atk { background: rgba(155, 89, 182, 0.15); color: #9b59b6; border: 1px solid rgba(155, 89, 182, 0.2); }
+
+    /* Scrollable containers */
+    .scroll-area {
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .scroll-area::-webkit-scrollbar {
+      width: 5px;
+    }
+    .scroll-area::-webkit-scrollbar-thumb {
+      background: var(--bg-element);
+      border-radius: 4px;
+    }
+
+    /* Code output */
+    .code-wrap {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: auto;
+      max-height: 350px;
+    }
+    .code-out {
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      line-height: 1.6;
+      white-space: pre;
+      color: #c9d1d9;
+      tab-size: 4;
+      margin: 0;
+    }
+    .code-out::-webkit-scrollbar { width: 5px; height: 5px; }
+    .code-out::-webkit-scrollbar-thumb { background: var(--bg-element); border-radius: 4px; }
+
+    /* Asset/Mode cards */
+    .asset-row, .mode-card {
+      background: var(--bg-element);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    
+    .asset-row-top, .mode-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.02);
+    }
+    
+    .asset-body, .mode-body {
+      display: none;
+      padding: 12px 14px;
+      border-top: 1px solid var(--border-color);
+      background: rgba(0,0,0,0.2);
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .asset-body.open, .mode-body.open {
+      display: flex;
+    }
+    
+    .asset-row-top .field-input {
+      flex: 1;
+      min-width: 80px;
+    }
+    
+    .chev {
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+    .chev.open { transform: rotate(180deg); }
+    
     .exp-btn {
       background: none;
       border: none;
-      color: #505070;
+      color: var(--text-muted);
       cursor: pointer;
       font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
+      padding: 4px 8px;
       border-radius: 4px;
-      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       align-items: center;
-      gap: 0.2rem;
-      transition: 0.12s;
+      gap: 4px;
     }
-    .exp-btn:hover { color: #e2e2f2; background: #222236; }
-    .chev { display: inline-block; transition: transform 0.15s; }
-    .chev.open { transform: rotate(180deg); }
-    .asset-body {
-      display: none;
-      flex-direction: column;
-      gap: 0.8rem;
-      padding: 0.8rem 1rem 1rem;
-      border-top: 1px solid #222236;
-      background: rgba(0,0,0,0.3);
+    .exp-btn:hover { background: var(--bg-element-hover); color: var(--text-main); }
+
+    /* Grid layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+    
+    @media (max-width: 800px) {
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .sidebar { width: 160px; min-width: 160px; }
     }
-    .asset-body.open { display: flex; }
-    .mode-card {
-      background: #181826;
-      border: 1px solid #222236;
-      border-radius: 10px;
-      margin-bottom: 0.6rem;
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .sidebar { width: 60px; min-width: 60px; }
+      .brand-name, .nav-item span { display: none; }
+      .brand { padding-left: 4px; }
+      .nav-item { justify-content: center; padding: 10px 6px; }
+      .nav-item i { font-size: 1.1rem; }
+      .window { flex-direction: column; max-height: 98vh; }
+      .main-content { max-height: 80vh; }
     }
-    .mode-head {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.8rem;
-      background: rgba(244, 114, 182, 0.05);
-      border-bottom: 1px solid #222236;
-    }
-    .mode-body { padding: 0.8rem 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
-    .mode-num {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.7rem;
-      color: #f472b6;
-    }
-    .sub {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #a78bfa;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .sub::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #222236;
-    }
-    .key-picker {
-      display: flex;
-      gap: 0.3rem;
-    }
-    .key-picker input { cursor: pointer; flex: 1; font-size: 0.7rem; padding: 0.3rem 0.5rem; }
-    .key-picker button { padding: 0.2rem 0.6rem; font-size: 0.65rem; flex-shrink: 0; }
+
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .mt-1 { margin-top: 6px; }
+    .mb-1 { margin-bottom: 6px; }
+    .gap-1 { gap: 6px; }
+    .flex { display: flex; }
+    .flex-wrap { flex-wrap: wrap; }
+    .items-center { align-items: center; }
+    .w-full { width: 100%; }
+    .text-muted { color: var(--text-muted); }
+    .text-sm { font-size: 0.75rem; }
+    .text-xs { font-size: 0.65rem; }
+
+    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(3px);
+      backdrop-filter: blur(4px);
       z-index: 999;
       display: none;
       align-items: center;
       justify-content: center;
     }
     .modal {
-      background: #101018;
-      border: 1px solid #333350;
-      border-radius: 14px;
-      padding: 1.5rem;
+      background: var(--bg-window);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
       width: 520px;
       max-width: 94vw;
       max-height: 80vh;
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 12px;
     }
-    .modal h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: #e2e2f2; }
+    .modal h3 { font-size: 1.1rem; font-weight: 600; }
     .modal-search {
-      padding: 0.5rem 0.7rem;
-      font-size: 0.8rem;
-      background: #080810;
-      border: 1px solid #222236;
+      padding: 10px 14px;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
       border-radius: 6px;
-      color: #e2e2f2;
-      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+    .modal-search:focus { border-color: var(--accent); }
     .key-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 0.3rem;
-      max-height: 300px;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 4px;
+      max-height: 280px;
       overflow-y: auto;
-      padding: 0.2rem;
+      padding: 4px 0;
     }
     .key-btn {
-      padding: 0.4rem 0.3rem;
+      padding: 6px 4px;
       font-size: 0.65rem;
-      background: #181826;
-      border: 1px solid #222236;
-      border-radius: 6px;
-      color: #9090b8;
+      background: var(--bg-element);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-muted);
       text-align: center;
       cursor: pointer;
-      transition: 0.1s;
-      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.15s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .key-btn:hover { background: rgba(124, 109, 250, 0.15); border-color: #7c6dfa; color: #a78bfa; }
-    .key-btn.picked { background: rgba(124, 109, 250, 0.2); border-color: #7c6dfa; color: #a78bfa; }
+    .key-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    .key-btn.picked { background: var(--accent); color: white; border-color: var(--accent); }
+
+    /* Tabs */
+    .tab-row { display: flex; gap: 4px; margin-bottom: 8px; }
+    .tab {
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .tab:hover { color: var(--text-main); background: var(--bg-element); }
+    .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+    .copy-ok { color: #2ecc71; font-size: 0.8rem; display: none; }
+    .empty { color: var(--text-muted); font-size: 0.85rem; padding: 16px; text-align: center; border: 1px dashed var(--border-color); border-radius: 6px; }
+    .notice { color: var(--text-muted); font-size: 0.75rem; line-height: 1.5; }
+    .notice code { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 3px; }
+    .highlight { color: var(--accent); }
+    
+    .key-picker {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .key-picker .field-input { cursor: pointer; min-width: 70px; width: auto; }
+    .key-picker .action-btn { padding: 4px 10px; font-size: 0.65rem; }
   </style>
 </head>
 <body>
-<div class="app">
-
-  <header class="header">
-    <div class="header-left">
-      <div class="logo">skidded <em>moveset maker</em></div>
-      <div class="subhead">creator · reanimate by yel0oo</div>
+<div class="window">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">
+      <span class="brand-logo"><i class="fas fa-cube"></i></span>
+      <div>
+        <div class="brand-name">reanim</div>
+        <div class="brand-sub">moveset creator</div>
+      </div>
     </div>
-    <div class="badge">v6 · dual</div>
-  </header>
-
-  <!-- Main Tabs -->
-  <div class="main-tab-row">
-    <button class="main-tab active" id="mt-moveset" onclick="switchMainTab('moveset')">⚔️ Moveset</button>
-    <button class="main-tab" id="mt-emote" onclick="switchMainTab('emote')">💃 Emotes</button>
+    <nav class="nav-links">
+      <button class="nav-item active" onclick="switchSection('info')">
+        <i class="fas fa-info-circle"></i><span>Info</span>
+      </button>
+      <button class="nav-item" onclick="switchSection('movement')">
+        <i class="fas fa-shoe-prints"></i><span>Movement</span>
+      </button>
+      <button class="nav-item" onclick="switchSection('sprint')">
+        <i class="fas fa-running"></i><span>Sprint</span>
+      </button>
+      <button class="nav-item" onclick="switchSection('chat')">
+        <i class="fas fa-comment-dots"></i><span>Chat Text</span>
+      </button>
+      <button class="nav-item" onclick="switchSection('hitbox')">
+        <i class="fas fa-crosshairs"></i><span>Hitbox</span>
+      </button>
+      <button class="nav-item" onclick="switchSection('modes')">
+        <i class="fas fa-layer-group"></i><span>Modes</span>
+      </button>
+      <button class="nav-item" onclick="switchSection('assets')">
+        <i class="fas fa-file-alt"></i><span>Assets</span>
+      </button>
+      <button class="nav-item" onclick="switchSection('output')">
+        <i class="fas fa-code"></i><span>Output</span>
+      </button>
+    </nav>
   </div>
 
-  <!-- MOVESET TAB -->
-  <div id="tab-moveset" class="tab-content active">
-    <!-- Moveset Info -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#7c6dfa;box-shadow:0 0 8px #7c6dfa"></span><span class="card-title">Moveset Info</span></div>
-      <div class="card-body">
-        <div class="grid-2">
-          <div class="field"><label>Display Name</label><input type="text" id="mName" value="MyMoveset"></div>
-          <div class="field"><label>Internal Name (no spaces)</label><input type="text" id="mInternal" value="mymoveset" oninput="this.value=this.value.replace(/\s/g,'')"></div>
-        </div>
-        <div class="field"><label>Description</label><textarea id="mDesc">work in progress...</textarea></div>
-      </div>
-    </section>
-
-    <!-- Movement -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Movement</span></div>
-      <div class="card-body">
-        <div class="grid-4">
-          <div class="field"><label>Walk Speed</label><input type="number" id="speedWalk" value="16" min="1"></div>
-          <div class="field"><label>Sprint Speed</label><input type="number" id="speedSprint" value="26" min="1"></div>
-          <div class="field"><label>Jump Power</label><input type="number" id="jumpPower" placeholder="default" step="1"></div>
-          <div class="field"><label>Allow Climbing</label>
-            <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.3rem">
-              <label class="toggle"><input type="checkbox" id="allowClimb" checked><span class="toggle-slider"></span></label>
-              <span style="font-size:0.75rem;color:#9090b8">Enabled</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Sprint Toggle -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#fbbf24;box-shadow:0 0 8px #fbbf24"></span><span class="card-title">Sprint / Walk Toggle</span></div>
-      <div class="card-body">
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="sprintOn" onchange="document.getElementById('sprintCfg').style.display=this.checked?'flex':'none'"><span class="toggle-slider"></span></label>
-          <span class="notice">Include sprint toggle button</span>
-        </div>
-        <div id="sprintCfg" style="display:none;flex-direction:column;gap:0.8rem">
-          <div class="grid-3">
-            <div class="field"><label>Keybind</label><div class="key-picker"><input type="text" id="spKey" value="LeftAlt" readonly onclick="openPicker('spKey')"><button class="btn btn-purple" onclick="openPicker('spKey')">key</button></div></div>
-            <div class="field"><label>Sprint Label</label><input type="text" id="spLS" value="Sprint"></div>
-            <div class="field"><label>Walk Label</label><input type="text" id="spLW" value="Walk"></div>
-          </div>
-          <div class="grid-4">
-            <div class="field"><label>Pos X scale</label><input type="number" id="spPX" value="1" step="0.01"></div>
-            <div class="field"><label>Pos X offset</label><input type="number" id="spOX" value="-260" step="1"></div>
-            <div class="field"><label>Pos Y scale</label><input type="number" id="spPY" value="1" step="0.01"></div>
-            <div class="field"><label>Pos Y offset</label><input type="number" id="spOY" value="-130" step="1"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Overhead Chat Text -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#22d3ee;box-shadow:0 0 8px #22d3ee"></span><span class="card-title">Overhead Chat Text</span></div>
-      <div class="card-body">
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="chatOn"><span class="toggle-slider"></span></label>
-          <span class="notice">Show typed messages as typewriter label via <code>HiddenGui</code></span>
-        </div>
-        <div class="grid-4">
-          <div class="field"><label>R (0–1)</label><input type="number" id="chatR" value="1" min="0" max="1" step="0.05"></div>
-          <div class="field"><label>G (0–1)</label><input type="number" id="chatG" value="1" min="0" max="1" step="0.05"></div>
-          <div class="field"><label>B (0–1)</label><input type="number" id="chatB" value="1" min="0" max="1" step="0.05"></div>
-          <div class="field"><label>Text Size</label><input type="number" id="chatSz" value="14" min="6" max="60"></div>
-        </div>
-        <div class="grid-3">
-          <div class="field"><label>Prefix</label><input type="text" id="chatPrefix" value=""></div>
-          <div class="field"><label>Chars/sec</label><input type="number" id="chatCPS" value="30" min="1" max="200"></div>
-          <div class="field"><label>Fade after (s, 0=never)</label><input type="number" id="chatFade" value="3" min="0" step="0.5"></div>
-        </div>
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="chatStroke" checked><span class="toggle-slider"></span></label>
-          <span class="notice">Black text stroke</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Hitbox Visualizer -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#f87171;box-shadow:0 0 8px #f87171"></span><span class="card-title">Hitbox Visualizer</span></div>
-      <div class="card-body">
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="hbDebug"><span class="toggle-slider"></span></label>
-          <span class="notice">Add "Hitbox Visual" toggle to config UI — visible ForceField hitboxes</span>
-        </div>
-        <div class="grid-3">
-          <div class="field"><label>Color R</label><input type="number" id="hbColorR" value="0" min="0" max="1" step="0.05"></div>
-          <div class="field"><label>Color G</label><input type="number" id="hbColorG" value="0" min="0" max="1" step="0.05"></div>
-          <div class="field"><label>Color B</label><input type="number" id="hbColorB" value="0" min="0" max="1" step="0.05"></div>
-        </div>
-        <div class="notice">Visual parts use ForceField material, auto-destroy after 1s. Default black matches official style.</div>
-      </div>
-    </section>
-
-    <!-- Modes -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span><span class="card-title">Modes <span style="font-weight:400;color:#505070;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">up to 5</span></span></div>
-      <div class="card-body">
-        <div class="notice">Each mode has its own toggle button, optional transition anim, base anim overrides, and exclusive attacks.</div>
-        <div id="modeList"><div class="empty">No modes yet — click "Add mode".</div></div>
-        <div class="btn-row"><button class="btn btn-purple" onclick="addMode()">+ Add mode</button></div>
-      </div>
-    </section>
-
-    <!-- Assets (default) -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa"></span><span class="card-title">Default Assets & Attacks</span></div>
-      <div class="card-body">
-        <div class="asset-list" id="assetList"></div>
-        <div class="btn-row">
-          <button class="btn btn-green" onclick="addAsset('base')">+ Base anim</button>
-          <button class="btn btn-purple" onclick="addAsset('action')">+ Attack anim</button>
-          <button class="btn btn-amber" onclick="addAsset('sound')">+ BG sound</button>
-        </div>
-        <div class="notice"><span style="color:#a78bfa">Base</span> — idle/walk/sprint/jump. Expand for loop audio.<br><span style="color:#a78bfa">Attack</span> — ability/attack. Expand for fling, hitbox, audio, button.<br><span style="color:#a78bfa">BG sound</span> — looping music played on Init.</div>
-      </div>
-    </section>
-
-    <!-- Moveset Output -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Generated Moveset Lua</span></div>
-      <div class="card-body">
-        <div class="tab-row">
-          <button class="tab active" id="t-prev" onclick="switchTab('prev')">Preview</button>
-          <button class="tab" id="t-exp" onclick="switchTab('exp')">Export</button>
-        </div>
-        <div id="p-prev">
-          <div class="code-wrap"><pre class="code-out" id="codeOut">-- fill in the form, then click Generate</pre></div>
-          <div class="gen-bar"><button class="btn btn-primary" onclick="generateMoveset()">⚡ Generate Moveset</button></div>
-        </div>
-        <div id="p-exp" style="display:none">
-          <div class="code-wrap"><pre class="code-out" id="codeOut2">-- click Generate Moveset first</pre></div>
-          <div class="gen-bar">
-            <button class="btn btn-primary" onclick="copyMovesetCode()">⎘ Copy</button>
-            <button class="btn btn-green" onclick="downloadMovesetCode()">↓ Download .lua</button>
-            <span class="copy-ok" id="copyMsg" style="display:none">✓ Copied!</span>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="content-header">
+      <h2 id="sectionTitle">Moveset Info</h2>
+      <p id="sectionDesc">Configure your moveset's basic information</p>
+    </div>
+    <div class="content-body" id="contentBody">
+      <!-- All sections rendered here by JavaScript -->
+    </div>
   </div>
-
-  <!-- EMOTE TAB -->
-  <div id="tab-emote" class="tab-content">
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Emotes <span style="font-weight:400;color:#505070;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">Dance modules</span></span></div>
-      <div class="card-body">
-        <div class="notice">Each emote generates a separate dance module .lua file. Fill in name, description, anim file, and optional music.</div>
-        <div id="emoteList"><div class="empty">No emotes yet — click "Add emote".</div></div>
-        <div class="btn-row"><button class="btn btn-pink" onclick="addEmote()">+ Add emote</button></div>
-      </div>
-    </section>
-
-    <!-- Emote Output -->
-    <section class="card">
-      <div class="card-head"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span><span class="card-title">Generated Emote Lua</span></div>
-      <div class="card-body">
-        <div class="notice">Select an emote from the list above, then generate its Lua module.</div>
-        <div class="code-wrap"><pre class="code-out" id="emoteCodeOut">-- add an emote above, then click Generate Emote</pre></div>
-        <div class="gen-bar">
-          <button class="btn btn-pink" onclick="generateEmote()">⚡ Generate Selected Emote</button>
-          <button class="btn btn-primary" onclick="copyEmoteCode()">⎘ Copy</button>
-          <button class="btn btn-green" onclick="downloadEmoteCode()">↓ Download .lua</button>
-          <span class="copy-ok" id="emoteCopyMsg" style="display:none">✓ Copied!</span>
-        </div>
-        <div class="notice" style="margin-top:0.5rem">Select an emote by clicking on its row, then generate.</div>
-      </div>
-    </section>
-  </div>
-
 </div>
 
 <!-- Key Picker Modal -->
 <div class="modal-overlay" id="pickerOv" onclick="if(event.target===this)closePicker()">
   <div class="modal">
-    <h3>Pick a keybind</h3>
-    <input class="modal-search" id="pickerSearch" placeholder="search keys..." oninput="filterKeys(this.value)">
+    <h3><i class="fas fa-keyboard"></i> Pick a keybind</h3>
+    <input class="modal-search" id="pickerSearch" placeholder="Search keys..." oninput="filterKeys(this.value)">
     <div class="key-grid" id="keyGrid"></div>
-    <div class="btn-row"><button class="btn" onclick="closePicker()">Cancel</button></div>
+    <div class="btn-row"><button class="action-btn action-btn-secondary" onclick="closePicker()">Cancel</button></div>
   </div>
 </div>
 
 <script>
-  // -------- KEY LIST --------
+  // -------- ALL KEYS --------
   const ALL_KEYS = [
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
     'Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
@@ -640,14 +674,12 @@
   // -------- STATE --------
   let assets = [];
   let modes = [];
-  let emotes = [];
   let nextId = 0;
-  let selectedEmoteId = null;
-  let _movesetCode = '';
-  let _emoteCode = '';
   const uid = () => ++nextId;
+  let _pickerTarget = null;
+  let _code = '';
 
-  // helpers
+  // -------- HELPERS --------
   const $ = id => document.getElementById(id);
   const val = id => ($(id)||{}).value || '';
   const num = id => parseFloat(val(id)) || 0;
@@ -657,16 +689,7 @@
   const escLua = s => (s||'').replace(/"/g,'\\"');
   const san = s => (s||'').replace(/[^a-zA-Z0-9_]/g,'_') || 'x';
 
-  // -------- MAIN TAB SWITCHING --------
-  function switchMainTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.main-tab').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-    document.getElementById('mt-' + tab).classList.add('active');
-  }
-
   // -------- KEY PICKER --------
-  let _pickerTarget = null;
   function openPicker(id) {
     _pickerTarget = id;
     $('pickerSearch').value = '';
@@ -679,1066 +702,152 @@
     const cur = _pickerTarget ? val(_pickerTarget) : '';
     const list = q ? ALL_KEYS.filter(k => k.toLowerCase().includes(q.toLowerCase())) : ALL_KEYS;
     $('keyGrid').innerHTML = list.map(k =>
-      '<div class="key-btn ' + (k===cur?'picked':'') + '" onclick="pickKey(\''+k+'\')">'+k+'</div>'
+      `<div class="key-btn ${k===cur?'picked':''}" onclick="pickKey('${k}')">${k}</div>`
     ).join('');
   }
   function pickKey(k) { if (_pickerTarget) $(_pickerTarget).value = k; closePicker(); }
 
-  // -------- UI HELPERS --------
-  function switchTab(t) {
-    $('p-prev').style.display = t==='prev'?'block':'none';
-    $('p-exp').style.display = t==='exp'?'block':'none';
-    $('t-prev').classList.toggle('active', t==='prev');
-    $('t-exp').classList.toggle('active', t==='exp');
-  }
-  function toggleExpand(id) {
-    const body = document.getElementById('ab-'+id);
-    const chev = document.getElementById('ac-'+id);
-    if (!body) return;
-    body.classList.toggle('open');
-    chev.classList.toggle('open');
-  }
-  const toggleHtml = (chk, onchange) =>
-    '<label class="toggle"><input type="checkbox" ' + (chk?'checked ':'') + ' onchange="' + onchange + '"><span class="toggle-slider"></span></label>';
-  const keyPickerHtml = (fid, val) =>
-    '<div class="key-picker"><input type="text" id="'+fid+'" value="'+esc(val)+'" readonly onclick="openPicker(\''+fid+'\')"><button class="btn btn-purple" onclick="openPicker(\''+fid+'\')">key</button></div>';
+  // -------- NAVIGATION --------
+  const sections = {
+    info: { title: 'Moveset Info', desc: 'Configure your moveset\'s basic information' },
+    movement: { title: 'Movement Settings', desc: 'Adjust walk speed, sprint speed, jump power, and climbing' },
+    sprint: { title: 'Sprint / Walk Toggle', desc: 'Add a sprint toggle button with custom keybind and position' },
+    chat: { title: 'Overhead Chat Text', desc: 'Typewriter-style chat notifications via HiddenGui' },
+    hitbox: { title: 'Hitbox Visualizer', desc: 'Debug hitboxes with ForceField visual indicators' },
+    modes: { title: 'Modes', desc: 'Create up to 5 distinct modes with their own attacks and animations' },
+    assets: { title: 'Default Assets & Attacks', desc: 'Base animations, attacks, and background sounds' },
+    output: { title: 'Generated Lua', desc: 'Preview, copy, or download your moveset module' }
+  };
 
-  // -------- MODES --------
-  function addMode() {
-    if (modes.length >= 5) { alert('Maximum 5 modes.'); return; }
-    const id = uid();
-    modes.push({
-      id, name: 'Alt Mode', key: 'V', btnLabel: 'Mode',
-      btnPX: '1', btnOX: '-80', btnPY: '1', btnOY: '-130',
-      transAnim: '', transDur: '0.5',
-      idleAnim: '', walkAnim: '', sprintAnim: '', jumpAnim: '',
-      attacks: []
-    });
-    renderModes();
-  }
-  function removeMode(id) { modes = modes.filter(m => m.id !== id); renderModes(); }
-  function setMode(id, k, v) { const m = modes.find(x => x.id === id); if (m) m[k] = v; }
-  function addModeAttack(modeId) {
-    const mo = modes.find(x => x.id === modeId); if (!mo) return;
-    const id = uid();
-    mo.attacks.push({
-      id, name: '', animFile: '',
-      key: 'Z', fling: false, btnLabel: '',
-      btnPX: '1', btnOX: '-230', btnPY: '1', btnOY: '-130',
-      hbOn: false, hbShape: 'Sphere', hbRadius: '4',
-      hbAnchor: 'HumanoidRootPart', hbFwd: '-2', hbUp: '0', hbDur: '0',
-      loopAudio: false, loopFile: '', loopVol: '0.8'
-    });
-    renderModes();
-  }
-  function removeModeAttack(modeId, atkId) {
-    const mo = modes.find(x => x.id === modeId); if (!mo) return;
-    mo.attacks = mo.attacks.filter(a => a.id !== atkId);
-    renderModes();
-  }
-  function setModeAttack(modeId, atkId, k, v) {
-    const mo = modes.find(x => x.id === modeId); if (!mo) return;
-    const a = mo.attacks.find(x => x.id === atkId); if (a) a[k] = v;
+  function switchSection(id) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.nav-item[onclick="switchSection('${id}')"]`)?.classList.add('active');
+    $('sectionTitle').textContent = sections[id].title;
+    $('sectionDesc').textContent = sections[id].desc;
+    renderSection(id);
   }
 
-  function renderModes() {
-    const el = $('modeList');
-    if (!modes.length) { el.innerHTML = '<div class="empty">No modes yet.</div>'; return; }
-    el.innerHTML = '';
-    modes.forEach((mo, idx) => {
-      const d = document.createElement('div');
-      d.className = 'mode-card';
-      let atkHTML = '';
-      mo.attacks.forEach(a => {
-        atkHTML += `
-          <div class="asset-row" style="margin:0">
-            <div class="asset-row-top">
-              <input type="text" placeholder="attack name" value="${esc(a.name)}" oninput="setModeAttack(${mo.id},${a.id},'name',this.value)" style="flex:1;min-width:70px">
-              <input type="text" placeholder="filename.anim" value="${esc(a.animFile)}" oninput="setModeAttack(${mo.id},${a.id},'animFile',this.value)" style="flex:2;min-width:90px">
-              <span class="badge badge-mode-atk">mode atk</span>
-              <button class="exp-btn" onclick="toggleExpand('ma${a.id}')">cfg <span class="chev" id="ac-ma${a.id}">▾</span></button>
-              <button class="btn btn-red" onclick="removeModeAttack(${mo.id},${a.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
-            </div>
-            <div class="asset-body" id="ab-ma${a.id}">
-              <div>
-                <div class="sub">fling & hitbox</div>
-                <div class="toggle-wrap" style="margin-bottom:0.4rem">${toggleHtml(a.fling, 'setModeAttack('+mo.id+','+a.id+',\'fling\',this.checked)')}<span class="notice">Fling on hit</span></div>
-                <div class="toggle-wrap" style="margin-bottom:0.4rem">${toggleHtml(a.hbOn, 'setModeAttack('+mo.id+','+a.id+',\'hbOn\',this.checked);document.getElementById(\'mhb'+a.id+'\').style.display=this.checked?\'flex\':\'none\'')}<span class="notice">Custom hitbox (requires Fling)</span></div>
-                <div id="mhb${a.id}" style="display:${a.hbOn?'flex':'none'};flex-direction:column;gap:0.6rem">
-                  <div class="grid-3">
-                    <div class="field"><label>Shape</label><select onchange="setModeAttack(${mo.id},${a.id},'hbShape',this.value)"><option${a.hbShape==='Sphere'?' selected':''}>Sphere</option><option${a.hbShape==='Box'?' selected':''}>Box</option></select></div>
-                    <div class="field"><label>Radius / size</label><input type="number" step="0.5" min="0.1" value="${a.hbRadius}" oninput="setModeAttack(${mo.id},${a.id},'hbRadius',this.value)"></div>
-                    <div class="field"><label>Duration (s, 0=full)</label><input type="number" step="0.1" min="0" value="${a.hbDur}" oninput="setModeAttack(${mo.id},${a.id},'hbDur',this.value)"></div>
-                  </div>
-                  <div class="grid-3">
-                    <div class="field"><label>Anchor part</label><select onchange="setModeAttack(${mo.id},${a.id},'hbAnchor',this.value)">${['HumanoidRootPart','Right Arm','Left Arm','Right Leg','Left Leg','Head','Torso'].map(p=>'<option'+(a.hbAnchor===p?' selected':'')+'>'+p+'</option>').join('')}</select></div>
-                    <div class="field"><label>Forward offset</label><input type="number" step="0.5" value="${a.hbFwd}" oninput="setModeAttack(${mo.id},${a.id},'hbFwd',this.value)"></div>
-                    <div class="field"><label>Up offset</label><input type="number" step="0.5" value="${a.hbUp}" oninput="setModeAttack(${mo.id},${a.id},'hbUp',this.value)"></div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div class="sub">audio & button</div>
-                <div class="toggle-wrap" style="margin-bottom:0.4rem">${toggleHtml(a.loopAudio, 'setModeAttack('+mo.id+','+a.id+',\'loopAudio\',this.checked);document.getElementById(\'mlaf'+a.id+'\').style.display=this.checked?\'grid\':\'none\'')}<span class="notice">Loop audio during attack</span></div>
-                <div id="mlaf${a.id}" class="grid-2" style="display:${a.loopAudio?'grid':'none'};margin-bottom:0.4rem">
-                  <div class="field"><label>Audio file</label><input type="text" placeholder="sound.mp3" value="${esc(a.loopFile)}" oninput="setModeAttack(${mo.id},${a.id},'loopFile',this.value)"></div>
-                  <div class="field"><label>Volume</label><input type="number" min="0" max="1" step="0.05" value="${a.loopVol}" oninput="setModeAttack(${mo.id},${a.id},'loopVol',this.value)"></div>
-                </div>
-                <div class="grid-4">
-                  <div class="field"><label>Keybind</label>${keyPickerHtml('mak_'+a.id, a.key)}</div>
-                  <div class="field"><label>Btn label</label><input type="text" value="${esc(a.btnLabel)}" oninput="setModeAttack(${mo.id},${a.id},'btnLabel',this.value)"></div>
-                  <div class="field"><label>Pos X scale</label><input type="number" step="0.01" value="${a.btnPX}" oninput="setModeAttack(${mo.id},${a.id},'btnPX',this.value)"></div>
-                  <div class="field"><label>Pos X offset</label><input type="number" step="5" value="${a.btnOX}" oninput="setModeAttack(${mo.id},${a.id},'btnOX',this.value)"></div>
-                </div>
-                <div class="grid-2">
-                  <div class="field"><label>Pos Y scale</label><input type="number" step="0.01" value="${a.btnPY}" oninput="setModeAttack(${mo.id},${a.id},'btnPY',this.value)"></div>
-                  <div class="field"><label>Pos Y offset</label><input type="number" step="5" value="${a.btnOY}" oninput="setModeAttack(${mo.id},${a.id},'btnOY',this.value)"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      });
+  function renderSection(id) {
+    const body = $('contentBody');
+    switch(id) {
+      case 'info': body.innerHTML = renderInfo(); break;
+      case 'movement': body.innerHTML = renderMovement(); break;
+      case 'sprint': body.innerHTML = renderSprint(); break;
+      case 'chat': body.innerHTML = renderChat(); break;
+      case 'hitbox': body.innerHTML = renderHitbox(); break;
+      case 'modes': body.innerHTML = renderModesSection(); break;
+      case 'assets': body.innerHTML = renderAssetsSection(); break;
+      case 'output': body.innerHTML = renderOutput(); break;
+      default: body.innerHTML = '<div class="empty">Section not found</div>';
+    }
+    // Re-bind any dynamic events
+    bindEvents();
+  }
 
-      d.innerHTML = `
-        <div class="mode-head">
-          <span class="mode-num">MODE ${idx+1}</span>
-          <input type="text" value="${esc(mo.name)}" oninput="setMode(${mo.id},'name',this.value)" style="flex:1;margin-left:0.4rem;font-size:0.75rem;padding:0.3rem 0.6rem">
-          <button class="btn btn-red" onclick="removeMode(${mo.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem;margin-left:0.3rem">×</button>
+  function bindEvents() {
+    // Sprint toggle visibility
+    const sprintOn = $('sprintOn');
+    if (sprintOn) {
+      sprintOn.onchange = function() {
+        const cfg = $('sprintCfg');
+        if (cfg) cfg.style.display = this.checked ? 'flex' : 'none';
+      };
+    }
+    // Chat toggle
+    const chatOn = $('chatOn');
+    // Hitbox debug toggle
+    // Internal name sanitization
+    const mInternal = $('mInternal');
+    if (mInternal) {
+      mInternal.oninput = function() { this.value = this.value.replace(/\s/g,''); };
+    }
+  }
+
+  // -------- RENDER FUNCTIONS --------
+  function renderInfo() {
+    return `
+      <div class="element">
+        <div class="element-info">
+          <h3>Display Name</h3>
+          <p>The name shown in-game</p>
         </div>
-        <div class="mode-body">
-          <div class="sub">toggle button</div>
-          <div class="grid-4">
-            <div class="field"><label>Keybind</label>${keyPickerHtml('mk_'+mo.id, mo.key)}</div>
-            <div class="field"><label>Button label</label><input type="text" value="${esc(mo.btnLabel)}" oninput="setMode(${mo.id},'btnLabel',this.value)"></div>
-            <div class="field"><label>Pos X scale</label><input type="number" step="0.01" value="${mo.btnPX}" oninput="setMode(${mo.id},'btnPX',this.value)"></div>
-            <div class="field"><label>Pos X offset</label><input type="number" step="5" value="${mo.btnOX}" oninput="setMode(${mo.id},'btnOX',this.value)"></div>
-          </div>
-          <div class="grid-2">
-            <div class="field"><label>Pos Y scale</label><input type="number" step="0.01" value="${mo.btnPY}" oninput="setMode(${mo.id},'btnPY',this.value)"></div>
-            <div class="field"><label>Pos Y offset</label><input type="number" step="5" value="${mo.btnOY}" oninput="setMode(${mo.id},'btnOY',this.value)"></div>
-          </div>
-          <div class="sub">transition animation (optional)</div>
-          <div class="grid-2">
-            <div class="field"><label>Transition anim</label><input type="text" placeholder="enter_mode1.anim" value="${esc(mo.transAnim)}" oninput="setMode(${mo.id},'transAnim',this.value)"></div>
-            <div class="field"><label>Duration (s)</label><input type="number" step="0.05" min="0" value="${mo.transDur}" oninput="setMode(${mo.id},'transDur',this.value)"></div>
-          </div>
-          <div class="sub">base anim overrides</div>
-          <div class="grid-2">
-            <div class="field"><label>Idle</label><input type="text" placeholder="idle_mode.anim" value="${esc(mo.idleAnim)}" oninput="setMode(${mo.id},'idleAnim',this.value)"></div>
-            <div class="field"><label>Walk</label><input type="text" placeholder="walk_mode.anim" value="${esc(mo.walkAnim)}" oninput="setMode(${mo.id},'walkAnim',this.value)"></div>
-          </div>
-          <div class="grid-2">
-            <div class="field"><label>Sprint</label><input type="text" placeholder="sprint_mode.anim" value="${esc(mo.sprintAnim)}" oninput="setMode(${mo.id},'sprintAnim',this.value)"></div>
-            <div class="field"><label>Jump</label><input type="text" placeholder="jump_mode.anim" value="${esc(mo.jumpAnim)}" oninput="setMode(${mo.id},'jumpAnim',this.value)"></div>
-          </div>
-          <div class="sub">mode-exclusive attacks</div>
-          <div class="notice" style="margin-bottom:0.4rem">These attacks are only bound while this mode is active.</div>
-          <div id="matklist_${mo.id}">${atkHTML || '<div class="empty">No mode attacks yet.</div>'}</div>
-          <div class="btn-row" style="margin-top:0.3rem"><button class="btn btn-purple" onclick="addModeAttack(${mo.id})">+ Add mode attack</button></div>
+        <div class="element-control">
+          <input class="field-input" id="mName" value="MyMoveset" style="min-width:180px">
         </div>
-      `;
-      el.appendChild(d);
-    });
-  }
-
-  // -------- ASSETS --------
-  function addAsset(type) {
-    assets.push({
-      id: uid(), type: type,
-      name: '', baseRole: 'idle', animFile: '',
-      key: 'Z', fling: false, btnLabel: '',
-      btnPX: '1', btnOX: '-230', btnPY: '1', btnOY: '-130',
-      hbOn: false, hbShape: 'Sphere', hbRadius: '4',
-      hbAnchor: 'HumanoidRootPart', hbFwd: '-2', hbUp: '0', hbDur: '0',
-      loopAudio: false, loopFile: '', loopVol: '0.8',
-      soundName: ''
-    });
-    renderAssets();
-  }
-  function removeAsset(id) { assets = assets.filter(a => a.id !== id); renderAssets(); }
-  function setAsset(id, k, v) { const a = assets.find(x => x.id === id); if (a) a[k] = v; }
-  function actionAssets() { return assets.filter(a => a.type === 'action' && a.name.trim()); }
-
-  function renderAssets() {
-    const el = $('assetList');
-    if (!assets.length) { el.innerHTML = '<div class="empty">No assets yet.</div>'; return; }
-    el.innerHTML = '';
-    assets.forEach(a => {
-      const div = document.createElement('div');
-      div.className = 'asset-row';
-      let top = '', body = '';
-      if (a.type === 'base') {
-        top = `
-          <input type="text" placeholder="filename.anim" value="${esc(a.name)}" oninput="setAsset(${a.id},'name',this.value)" style="flex:2;min-width:110px">
-          <select style="min-width:70px;flex:0" onchange="setAsset(${a.id},'baseRole',this.value)">
-            ${['idle','walk','sprint','jump'].map(r=>'<option'+(a.baseRole===r?' selected':'')+'>'+r+'</option>').join('')}
-          </select>
-          <span class="badge badge-base">base</span>`;
-        body = `
-          <div class="sub">loop audio while active</div>
-          <div class="toggle-wrap">${toggleHtml(a.loopAudio, 'setAsset('+a.id+',\'loopAudio\',this.checked);document.getElementById(\'laf'+a.id+'\').style.display=this.checked?\'grid\':\'none\'')}<span class="notice">Play looped sound</span></div>
-          <div id="laf${a.id}" class="grid-2" style="display:${a.loopAudio?'grid':'none'}">
-            <div class="field"><label>Audio file</label><input type="text" placeholder="walk.mp3" value="${esc(a.loopFile)}" oninput="setAsset(${a.id},'loopFile',this.value)"></div>
-            <div class="field"><label>Volume</label><input type="number" min="0" max="1" step="0.05" value="${a.loopVol}" oninput="setAsset(${a.id},'loopVol',this.value)"></div>
-          </div>`;
-      } else if (a.type === 'action') {
-        top = `
-          <input type="text" placeholder="attack name" value="${esc(a.name)}" oninput="setAsset(${a.id},'name',this.value)" style="flex:1;min-width:80px">
-          <input type="text" placeholder="filename.anim" value="${esc(a.animFile)}" oninput="setAsset(${a.id},'animFile',this.value)" style="flex:2;min-width:100px">
-          <span class="badge badge-action">attack</span>`;
-        body = `
-          <div><div class="sub">fling on hit</div><div class="toggle-wrap">${toggleHtml(a.fling, 'setAsset('+a.id+',\'fling\',this.checked)')}<span class="notice">Call ReanimateFling(target) on touched chars</span></div></div>
-          <div><div class="sub">custom hitbox</div>
-          <div class="toggle-wrap">${toggleHtml(a.hbOn, 'setAsset('+a.id+',\'hbOn\',this.checked);document.getElementById(\'hb'+a.id+'\').style.display=this.checked?\'flex\':\'none\'')}<span class="notice">Spawn hitbox at start</span></div>
-          <div id="hb${a.id}" style="display:${a.hbOn?'flex':'none'};flex-direction:column;gap:0.6rem">
-            <div class="grid-3">
-              <div class="field"><label>Shape</label><select onchange="setAsset(${a.id},'hbShape',this.value)"><option${a.hbShape==='Sphere'?' selected':''}>Sphere</option><option${a.hbShape==='Box'?' selected':''}>Box</option></select></div>
-              <div class="field"><label>Radius / size</label><input type="number" step="0.5" min="0.1" value="${a.hbRadius}" oninput="setAsset(${a.id},'hbRadius',this.value)"></div>
-              <div class="field"><label>Fire after (s, 0=start)</label><input type="number" step="0.05" min="0" value="${a.hbDur}" oninput="setAsset(${a.id},'hbDur',this.value)"></div>
-            </div>
-            <div class="grid-3">
-              <div class="field"><label>Anchor part</label><select onchange="setAsset(${a.id},'hbAnchor',this.value)">${['HumanoidRootPart','Right Arm','Left Arm','Right Leg','Left Leg','Head','Torso'].map(p=>'<option'+(a.hbAnchor===p?' selected':'')+'>'+p+'</option>').join('')}</select></div>
-              <div class="field"><label>Forward offset</label><input type="number" step="0.5" value="${a.hbFwd}" oninput="setAsset(${a.id},'hbFwd',this.value)"></div>
-              <div class="field"><label>Up offset</label><input type="number" step="0.5" value="${a.hbUp}" oninput="setAsset(${a.id},'hbUp',this.value)"></div>
-            </div>
-          </div></div>
-          <div><div class="sub">audio during attack</div>
-          <div class="toggle-wrap">${toggleHtml(a.loopAudio, 'setAsset('+a.id+',\'loopAudio\',this.checked);document.getElementById(\'laf'+a.id+'\').style.display=this.checked?\'grid\':\'none\'')}<span class="notice">Play sound while active</span></div>
-          <div id="laf${a.id}" class="grid-2" style="display:${a.loopAudio?'grid':'none'}">
-            <div class="field"><label>Audio file</label><input type="text" placeholder="swing.mp3" value="${esc(a.loopFile)}" oninput="setAsset(${a.id},'loopFile',this.value)"></div>
-            <div class="field"><label>Volume</label><input type="number" min="0" max="1" step="0.05" value="${a.loopVol}" oninput="setAsset(${a.id},'loopVol',this.value)"></div>
-          </div></div>
-          <div><div class="sub">on-screen button</div>
-          <div class="grid-4">
-            <div class="field"><label>Keybind</label>${keyPickerHtml('ak_'+a.id, a.key)}</div>
-            <div class="field"><label>Btn label</label><input type="text" placeholder="${esc(a.name||'attack')}" value="${esc(a.btnLabel)}" oninput="setAsset(${a.id},'btnLabel',this.value)"></div>
-            <div class="field"><label>Pos X scale</label><input type="number" step="0.01" value="${a.btnPX}" oninput="setAsset(${a.id},'btnPX',this.value)"></div>
-            <div class="field"><label>Pos X offset</label><input type="number" step="5" value="${a.btnOX}" oninput="setAsset(${a.id},'btnOX',this.value)"></div>
-          </div>
-          <div class="grid-2">
-            <div class="field"><label>Pos Y scale</label><input type="number" step="0.01" value="${a.btnPY}" oninput="setAsset(${a.id},'btnPY',this.value)"></div>
-            <div class="field"><label>Pos Y offset</label><input type="number" step="5" value="${a.btnOY}" oninput="setAsset(${a.id},'btnOY',this.value)"></div>
-          </div>
-          <div class="notice">Presets: (-230,-130) (-180,-130) (-130,-130) (-130,-230) (-180,-230)</div></div>`;
-      } else { // sound
-        top = `
-          <input type="text" placeholder="background.mp3" value="${esc(a.soundName)}" oninput="setAsset(${a.id},'soundName',this.value)" style="flex:1;min-width:140px">
-          <span class="badge badge-sound">bg sound</span>`;
-        body = '<div class="notice">Plays on Init, destroyed on Destroy.</div>';
-      }
-      div.innerHTML = `
-        <div class="asset-row-top">${top}
-          <button class="exp-btn" onclick="toggleExpand(${a.id})">settings <span class="chev" id="ac-${a.id}">▾</span></button>
-          <button class="btn btn-red" onclick="removeAsset(${a.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
+      </div>
+      <div class="element">
+        <div class="element-info">
+          <h3>Internal Name</h3>
+          <p>Filename (no spaces)</p>
         </div>
-        <div class="asset-body" id="ab-${a.id}">${body}</div>
-      `;
-      el.appendChild(div);
-    });
-  }
-
-  // -------- EMOTES --------
-  function addEmote() {
-    const id = uid();
-    emotes.push({
-      id,
-      name: 'Dance',
-      description: 'cool moves',
-      animFile: 'Rock.anim',
-      musicFile: 'dance.mp3',
-      musicDesc: 'beat',
-      volume: 0.8,
-      startTime: 0,
-      endTime: 45.5
-    });
-    renderEmotes();
-  }
-  function removeEmote(id) { emotes = emotes.filter(e => e.id !== id); if (selectedEmoteId === id) selectedEmoteId = null; renderEmotes(); }
-  function setEmote(id, k, v) { const e = emotes.find(x => x.id === id); if (e) e[k] = v; }
-  function selectEmote(id) { selectedEmoteId = id; renderEmotes(); }
-
-  function renderEmotes() {
-    const el = $('emoteList');
-    if (!emotes.length) { el.innerHTML = '<div class="empty">No emotes yet — click "Add emote".</div>'; return; }
-    el.innerHTML = '';
-    emotes.forEach(e => {
-      const div = document.createElement('div');
-      div.className = 'asset-row';
-      if (selectedEmoteId === e.id) div.style.borderColor = '#f472b6';
-      div.style.cursor = 'pointer';
-      div.onclick = () => selectEmote(e.id);
-      div.innerHTML = `
-        <div class="asset-row-top">
-          <input type="text" placeholder="Emote name" value="${esc(e.name)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'name',this.value)" style="flex:1;min-width:80px">
-          <input type="text" placeholder="Description" value="${esc(e.description)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'description',this.value)" style="flex:1;min-width:80px">
-          <input type="text" placeholder="Anim file .anim" value="${esc(e.animFile)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'animFile',this.value)" style="flex:1;min-width:90px">
-          <span class="badge badge-emote">emote</span>
-          <button class="btn btn-red" onclick="event.stopPropagation();removeEmote(${e.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
+        <div class="element-control">
+          <input class="field-input" id="mInternal" value="mymoveset" style="min-width:180px" oninput="this.value=this.value.replace(/\\s/g,'')">
         </div>
-        <div class="asset-body open" style="display:flex">
-          <div class="grid-2">
-            <div class="field"><label>Music file (mp3)</label><input type="text" placeholder="dance.mp3" value="${esc(e.musicFile)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'musicFile',this.value)"></div>
-            <div class="field"><label>Music description</label><input type="text" placeholder="beat" value="${esc(e.musicDesc)}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'musicDesc',this.value)"></div>
-          </div>
-          <div class="grid-3">
-            <div class="field"><label>Volume</label><input type="number" step="0.05" min="0" max="1" value="${e.volume}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'volume',this.value)"></div>
-            <div class="field"><label>Start time (s)</label><input type="number" step="0.5" min="0" value="${e.startTime}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'startTime',this.value)"></div>
-            <div class="field"><label>End time (s)</label><input type="number" step="0.5" min="0" value="${e.endTime}" onclick="event.stopPropagation()" oninput="setEmote(${e.id},'endTime',this.value)"></div>
-          </div>
-          <div class="notice">Click row to select, then generate.</div>
+      </div>
+      <div class="element">
+        <div class="element-info">
+          <h3>Description</h3>
+          <p>Brief description of your moveset</p>
         </div>
-      `;
-      el.appendChild(div);
-    });
+        <div class="element-control" style="flex:1;min-width:200px">
+          <textarea class="field-input" id="mDesc" style="min-height:50px;width:100%;resize:vertical" placeholder="work in progress...">work in progress...</textarea>
+        </div>
+      </div>
+    `;
   }
 
-  // -------- GENERATE MOVESET --------
-  function generateMoveset() {
-    // sync key pickers
-    actionAssets().forEach(a => { const e = document.getElementById('ak_'+a.id); if (e) a.key = e.value || a.key; });
-    modes.forEach(mo => {
-      const e = document.getElementById('mk_'+mo.id); if (e) mo.key = e.value || mo.key;
-      mo.attacks.forEach(a => { const e2 = document.getElementById('mak_'+a.id); if (e2) a.key = e2.value || a.key; });
-    });
-
-    // --- MOVESET CODE ---
-    const name = (val('mName').trim() || 'MyMoveset').replace(/"/g,'\\"');
-    const internal = val('mInternal').trim().replace(/\s/g,'') || 'mymoveset';
-    const desc = (val('mDesc').trim() || '...').replace(/\n/g,'\\n').replace(/"/g,'\\"');
-    const speedWalk = int('speedWalk') || 16;
-    const speedSprint = int('speedSprint') || 26;
-    const jumpPower = val('jumpPower').trim();
-    const allowClimb = bool('allowClimb');
-    const sprintOn = bool('sprintOn');
-    const spKey = val('spKey') || 'LeftAlt';
-    const spLS = (val('spLS').trim() || 'Sprint').replace(/"/g,'\\"');
-    const spLW = (val('spLW').trim() || 'Walk').replace(/"/g,'\\"');
-    const spPX = num('spPX')||1, spOX = int('spOX')||-260, spPY = num('spPY')||1, spOY = int('spOY')||-130;
-    const chatOn = bool('chatOn');
-    const chatR = num('chatR'), chatG = num('chatG'), chatB = num('chatB');
-    const chatSz = int('chatSz')||14;
-    const chatPrefix = (val('chatPrefix')||'').replace(/"/g,'\\"');
-    const chatCPS = int('chatCPS')||30;
-    const chatFade = num('chatFade');
-    const chatStroke = bool('chatStroke');
-    const hbDebugOn = bool('hbDebug');
-    const hbColorR = num('hbColorR'), hbColorG = num('hbColorG'), hbColorB = num('hbColorB');
-
-    const baseA = assets.filter(a => a.type === 'base');
-    const actionA = actionAssets();
-    const soundA = assets.filter(a => a.type === 'sound');
-    const loopA = assets.filter(a => a.loopAudio && a.loopFile.trim());
-    const hasBg = soundA.length > 0;
-    const hasLoop = loopA.length > 0;
-    const hasSprint = sprintOn;
-    const hasModes = modes.length > 0;
-    const hasHitbox = actionA.some(a => a.hbOn && a.fling) || modes.some(mo => mo.attacks.some(a => a.hbOn && a.fling));
-
-    const allModeAtks = modes.flatMap(mo => mo.attacks.filter(a => a.name.trim()));
-    const allFiles = [
-      ...baseA.map(a => a.name).filter(Boolean),
-      ...actionA.map(a => a.animFile || (a.name ? a.name+' '+internal+'.anim' : '')).filter(Boolean),
-      ...soundA.map(a => a.soundName).filter(Boolean),
-      ...loopA.map(a => a.loopFile),
-      ...allModeAtks.map(a => a.animFile || (a.name ? a.name+'_mode.anim' : '')).filter(Boolean),
-      ...allModeAtks.filter(a => a.loopAudio && a.loopFile).map(a => a.loopFile),
-      ...modes.flatMap(mo => [mo.transAnim, mo.idleAnim, mo.walkAnim, mo.sprintAnim, mo.jumpAnim].filter(Boolean))
-    ];
-    const uniqueFiles = [...new Set(allFiles)];
-
-    const baseAnimsLua = baseA.length
-      ? baseA.map(a => '        ' + a.baseRole + ' = loadAnim(figure, "' + (a.name||a.baseRole+' '+internal+'.anim') + '", true),').join('\n')
-      : ['        idle   = loadAnim(figure, "idle '+internal+'.anim",   true),',
-         '        walk   = loadAnim(figure, "walk '+internal+'.anim",   true),',
-         '        sprint = loadAnim(figure, "sprint '+internal+'.anim", true),',
-         '        jump   = loadAnim(figure, "jump '+internal+'.anim",   true),'].join('\n');
-
-    const actionAnimsLua = actionA.map(a => '        ["' + a.name + '"] = loadAnim(figure, "' + (a.animFile||a.name+' '+internal+'.anim') + '", false),').join('\n');
-    const flingLines = actionA.length ? actionA.map(a => '        ["' + a.name + '"] = ' + (a.fling?'true':'false') + ',').join('\n') : '        -- no default attacks';
-    const configSw = actionA.map(a => '        Util_CreateSwitch(parent, "' + a.name + ' flings", m.FlingEnabled["' + a.name + '"]).Changed:Connect(function(v) m.FlingEnabled["' + a.name + '"] = v end)').join('\n') || '        -- no default attacks';
-
-    const loopDecls = loopA.map(a => '    local snd_' + san(a.name||a.baseRole||'x'+a.id) + ' = nil').join('\n');
-    const loopInits = loopA.map(a => '    snd_' + san(a.name||a.baseRole||'x'+a.id) + ' = makeSound("' + a.loopFile + '", hrp, ' + (parseFloat(a.loopVol)||0.8) + ', false)').join('\n');
-    const loopDestroys = loopA.map(a => { const s = 'snd_' + san(a.name||a.baseRole||'x'+a.id); return '    if ' + s + ' then ' + s + ':Stop() ' + s + ':Destroy() ' + s + ' = nil end'; }).join('\n');
-    const stopActSounds = actionA.filter(a => a.loopAudio && a.loopFile).map(a => { const s = 'snd_' + san(a.name||'x'+a.id); return '        if ' + s + ' then ' + s + ':Stop() end'; }).join('\n') || '        -- no per-action sounds';
-    const playActSound = actionA.filter(a => a.loopAudio && a.loopFile).map(a => { const s = 'snd_' + san(a.name||'x'+a.id); return '        if name == "' + a.name + '" and ' + s + ' then ' + s + ':Play() end'; }).join('\n');
-    const baseSoundSetBase = baseA.filter(a => a.loopAudio && a.loopFile).map(a => { const s = 'snd_' + san(a.baseRole||'x'+a.id); return '        if state == "' + a.baseRole + '" then\n            if ' + s + ' and not ' + s + '.IsPlaying then ' + s + ':Play() end\n        else\n            if ' + s + ' then ' + s + ':Stop() end\n        end'; }).join('\n');
-
-    const btnBinds = actionA.map(a => '\n        ContextActions:BindAction("GM_' + a.name + '", function(_, inputState, _)\n            if inputState == Enum.UserInputState.Begin then playAction("' + a.name + '") end\n        end, true, Enum.KeyCode.' + a.key + ')\n        ContextActions:SetTitle("GM_' + a.name + '", "' + (a.btnLabel||a.name) + '")\n        ContextActions:SetPosition("GM_' + a.name + '", UDim2.new(' + (parseFloat(a.btnPX)||1) + ', ' + (parseInt(a.btnOX)||-230) + ', ' + (parseFloat(a.btnPY)||1) + ', ' + (parseInt(a.btnOY)||-130) + '))').join('\n');
-    const btnUnbinds = actionA.map(a => '        ContextActions:UnbindAction("GM_' + a.name + '")').join('\n');
-
-    const hitboxFn = hasHitbox ?
-'    local function fireHitbox(anchorName, fwdOffset, upOffset, shapeType, radius)\n' +
-'        local anchor = figureRef and figureRef:FindFirstChild(anchorName)\n' +
-'            or figureRef and figureRef:FindFirstChild("HumanoidRootPart")\n' +
-'        if not anchor then return end\n' +
-'        local pos = anchor.CFrame * CFrame.new(0, upOffset, fwdOffset)\n' +
-'        local hitPos = pos.Position\n' +
-'        if m.HitboxDebug then\n' +
-'            local vis = Instance.new("Part")\n' +
-'            vis.Name = RandomString()\n' +
-'            vis.CastShadow = false\n' +
-'            vis.Material = Enum.Material.ForceField\n' +
-'            vis.Anchored = true\n' +
-'            vis.CanCollide = false\n' +
-'            vis.CanTouch = false\n' +
-'            vis.CanQuery = false\n' +
-'            vis.Color = Color3.new(' + hbColorR + ', ' + hbColorG + ', ' + hbColorB + ')\n' +
-'            vis.Size = Vector3.one * radius * 2\n' +
-'            vis.Shape = shapeType == "Sphere" and Enum.PartType.Ball or Enum.PartType.Block\n' +
-'            vis.CFrame = pos\n' +
-'            vis.Parent = workspace\n' +
-'            Debris:AddItem(vis, 1)\n' +
-'        end\n' +
-'        local parts = shapeType == "Sphere"\n' +
-'            and workspace:GetPartBoundsInRadius(hitPos, radius)\n' +
-'            or  workspace:GetPartBoundsInBox(pos, Vector3.one * radius * 2)\n' +
-'        for _, part in parts do\n' +
-'            if part.Parent then\n' +
-'                local hum = part.Parent:FindFirstChildOfClass("Humanoid")\n' +
-'                if hum and hum.RootPart and not hum.RootPart:IsGrounded() then\n' +
-'                    ReanimateFling(part.Parent)\n' +
-'                end\n' +
-'            end\n' +
-'        end\n' +
-'    end\n' : '';
-
-    const makeHbCall = (a, prefix) => {
-      if (!a.hbOn || !a.fling) return '';
-      const delay = parseFloat(a.hbDur) || 0;
-      const call = prefix + 'fireHitbox("' + (a.hbAnchor||'HumanoidRootPart') + '", ' + (parseFloat(a.hbFwd)||0) + ', ' + (parseFloat(a.hbUp)||0) + ', "' + (a.hbShape||'Sphere') + '", ' + (parseFloat(a.hbRadius)||4) + ')';
-      if (delay > 0) return prefix + 'task.delay(' + delay + ', function() ' + call + ' end)';
-      return call;
-    };
-
-    const modeAnimTables = hasModes ? modes.map((mo, i) => {
-      const lines = [];
-      if (mo.transAnim) lines.push('            trans = loadAnim(figure, "' + mo.transAnim + '", false),');
-      if (mo.idleAnim)  lines.push('            idle  = loadAnim(figure, "' + mo.idleAnim + '", true),');
-      if (mo.walkAnim)  lines.push('            walk  = loadAnim(figure, "' + mo.walkAnim + '", true),');
-      if (mo.sprintAnim)lines.push('            sprint= loadAnim(figure, "' + mo.sprintAnim + '", true),');
-      if (mo.jumpAnim)  lines.push('            jump  = loadAnim(figure, "' + mo.jumpAnim + '", true),');
-      mo.attacks.filter(a => a.name.trim()).forEach(a => {
-        lines.push('            action_' + san(a.name) + ' = loadAnim(figure, "' + (a.animFile||a.name+'_mode.anim') + '", false),');
-      });
-      return lines.length ? '        modeAnims[' + (i+1) + '] = {\n' + lines.join('\n') + '\n        }' : '        modeAnims[' + (i+1) + '] = {}';
-    }).join('\n') : '';
-
-    const modeBinds = hasModes ? modes.map((mo, i) => {
-      const modeAtkBinds = mo.attacks.filter(a => a.name.trim()).map(a =>
-        '            ContextActions:BindAction("GM_M' + (i+1) + '_' + a.name + '", function(_, inputState, _)\n' +
-        '                if inputState == Enum.UserInputState.Begin then playModeAction(' + (i+1) + ', "' + a.name + '") end\n' +
-        '            end, true, Enum.KeyCode.' + a.key + ')\n' +
-        '            ContextActions:SetTitle("GM_M' + (i+1) + '_' + a.name + '", "' + (a.btnLabel||a.name) + '")\n' +
-        '            ContextActions:SetPosition("GM_M' + (i+1) + '_' + a.name + '", UDim2.new(' + (parseFloat(a.btnPX)||1) + ', ' + (parseInt(a.btnOX)||-230) + ', ' + (parseFloat(a.btnPY)||1) + ', ' + (parseInt(a.btnOY)||-130) + '))'
-      ).join('\n');
-      const modeAtkUnbinds = mo.attacks.filter(a => a.name.trim()).map(a =>
-        '            ContextActions:UnbindAction("GM_M' + (i+1) + '_' + a.name + '")'
-      ).join('\n');
-      const transDur = parseFloat(mo.transDur) || 0.5;
-      return '\n        ContextActions:BindAction("GM_Mode' + (i+1) + '", function(_, inputState, _)\n' +
-        '            if inputState ~= Enum.UserInputState.Begin then return end\n' +
-        '            if currentMode == ' + (i+1) + ' then\n' +
-        '                currentMode = 0\n' +
-        '                currentBase = "none"\n' +
-        '                clearBase()\n' +
-        '                ContextActions:SetTitle("GM_Mode' + (i+1) + '", "' + escLua(mo.btnLabel||mo.name) + '")\n' +
-        '                ' + modeAtkUnbinds + '\n' +
-        '                bindDefaultAttacks()\n' +
-        '            else\n' +
-        '                currentMode = ' + (i+1) + '\n' +
-        '                currentBase = "none"\n' +
-        '                clearBase()\n' +
-        '                ContextActions:SetTitle("GM_Mode' + (i+1) + '", "▶ ' + escLua(mo.name) + '")\n' +
-        '                unbindDefaultAttacks()\n' +
-        '                ' + modeAtkBinds + '\n' +
-        (mo.transAnim ?
-        '                local ta = modeAnims[' + (i+1) + '] and modeAnims[' + (i+1) + '].trans\n' +
-        '                if ta then\n' +
-        '                    ta.weight = 1\n' +
-        '                    actionStart[ta] = os.clock()\n' +
-        '                    task.delay(' + transDur + ', function()\n' +
-        '                        if currentMode == ' + (i+1) + ' then ta.weight = 0 end\n' +
-        '                    end)\n' +
-        '                end\n' : '') +
-        '            end\n' +
-        '        end, true, Enum.KeyCode.' + mo.key + ')\n' +
-        '        ContextActions:SetTitle("GM_Mode' + (i+1) + '", "' + escLua(mo.btnLabel||mo.name) + '")\n' +
-        '        ContextActions:SetPosition("GM_Mode' + (i+1) + '", UDim2.new(' + (parseFloat(mo.btnPX)||1) + ', ' + (parseInt(mo.btnOX)||-80) + ', ' + (parseFloat(mo.btnPY)||1) + ', ' + (parseInt(mo.btnOY)||-130) + '))';
-    }).join('\n') : '';
-
-    const modeUnbinds = hasModes ? modes.map((_,i) => '        ContextActions:UnbindAction("GM_Mode' + (i+1) + '")').join('\n') : '';
-    const modeSetBaseExtra = hasModes ?
-'        local mOver = modeAnims[currentMode]\n' +
-'        if mOver and mOver[state] then\n' +
-'            mOver[state].weight = 1\n' +
-'            return\n' +
-'        end' : '';
-
-    const modeActionFn = hasModes ?
-'    local function playModeAction(modeIdx, name)\n' +
-'        if currentAction then return end\n' +
-'        local ma = modeAnims[modeIdx]\n' +
-'        if not ma then return end\n' +
-'        local a = ma["action_"..name]\n' +
-'        if not a then return end\n' +
-'        stopAction()\n' +
-'        a.weight = 1\n' +
-'        actionStart[a] = os.clock()\n' +
-'        currentAction = name\n' +
-'        flingActive = true\n' +
-        modes.flatMap((mo,i) => mo.attacks.filter(a => a.name.trim() && a.hbOn && a.fling).map(a =>
-          '        if modeIdx == ' + (i+1) + ' and name == "' + a.name + '" then\n' + makeHbCall(a, '            ') + '\n        end'
-        )).join('\n') + '\n' +
-'    end\n' : '';
-
-    const modeActionUpdateCheck = hasModes ?
-'            if currentMode > 0 and currentAction then\n' +
-'                local ma = modeAnims[currentMode]\n' +
-'                local ca = ma and ma["action_"..tostring(currentAction)]\n' +
-'                if ca and actionStart[ca] then\n' +
-'                    local elapsed  = os.clock() - actionStart[ca]\n' +
-'                    local duration = ca.track and ca.track.Time or 0\n' +
-'                    if duration > 0 and elapsed >= duration / (ca.speed or 1) then\n' +
-'                        ca.weight     = 0\n' +
-'                        stopAllAnimSounds()\n' +
-'                        currentAction = nil\n' +
-'                        flingActive   = false\n' +
-'                        currentBase   = "none"\n' +
-'                    end\n' +
-'                    return\n' +
-'                end\n' +
-'            end\n' : '';
-
-    const bindDefaultAtksBody = actionA.map(a =>
-'        ContextActions:BindAction("GM_' + a.name + '", function(_, inputState, _)\n' +
-'            if inputState == Enum.UserInputState.Begin then playAction("' + a.name + '") end\n' +
-'        end, true, Enum.KeyCode.' + a.key + ')\n' +
-'        ContextActions:SetTitle("GM_' + a.name + '", "' + (a.btnLabel||a.name) + '")\n' +
-'        ContextActions:SetPosition("GM_' + a.name + '", UDim2.new(' + (parseFloat(a.btnPX)||1) + ', ' + (parseInt(a.btnOX)||-230) + ', ' + (parseFloat(a.btnPY)||1) + ', ' + (parseInt(a.btnOY)||-130) + '))'
-    ).join('\n');
-    const unbindDefaultAtksBody = actionA.map(a => '        ContextActions:UnbindAction("GM_' + a.name + '")').join('\n');
-
-    // Build final code
-    const L = [];
-    const ln = s => L.push(s);
-    const lnif = (c, s) => { if (c) L.push(s); };
-
-    ln('-- ' + internal + '.lua');
-    ln('-- Generated by Moveset Creator v6');
-    ln('-- Place in: UhhhhhhReanim/Modules/' + internal + '.lua');
-    ln('');
-    ln('cloneref = cloneref or function(o) return o end');
-    ln('');
-    ln('local Debris     = cloneref(game:GetService("Debris"))');
-    ln('local RunService = cloneref(game:GetService("RunService"))');
-    ln('');
-    ln('local modules = {}');
-    ln('local function AddModule(m)');
-    ln('    table.insert(modules, m)');
-    ln('end');
-    ln('');
-    ln('AddModule(function()');
-    ln('    local m = {}');
-    ln('    m.ModuleType   = "MOVESET"');
-    ln('    m.Name         = "' + name + '"');
-    ln('    m.Description  = "' + desc + '"');
-    ln('    m.InternalName = "' + internal + '"');
-    if (hbDebugOn) ln('    m.HitboxDebug  = false');
-    if (chatOn) ln('    m.Notifications = true');
-    ln('');
-    ln('    m.Assets = {');
-    if (uniqueFiles.length) uniqueFiles.forEach(f => ln('        "' + f + '",'));
-    else ln('        -- no assets configured');
-    ln('    }');
-    ln('');
-    ln('    m.FlingEnabled = {');
-    ln(flingLines);
-    ln('    }');
-    ln('');
-    ln('    m.Config = function(parent)');
-    ln('        Util_CreateText(parent, "' + name + '", 18, Enum.TextXAlignment.Center)');
-    ln('        Util_CreateSeparator(parent)');
-    ln('        Util_CreateText(parent, "Fling on Hit", 15, Enum.TextXAlignment.Center)');
-    ln(configSw);
-    if (hbDebugOn) {
-      ln('        Util_CreateSeparator(parent)');
-      ln('        Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(v)');
-      ln('            m.HitboxDebug = v');
-      ln('        end)');
-    }
-    if (chatOn) {
-      ln('        Util_CreateSeparator(parent)');
-      ln('        Util_CreateSwitch(parent, "Text Notifications", m.Notifications).Changed:Connect(function(v)');
-      ln('            m.Notifications = v');
-      ln('        end)');
-    }
-    ln('    end');
-    ln('');
-    ln('    m.SaveConfig = function()');
-    ln('        local t = { FlingEnabled = m.FlingEnabled }');
-    lnif(hbDebugOn, '        t.HitboxDebug = m.HitboxDebug');
-    lnif(chatOn, '        t.Notifications = m.Notifications');
-    ln('        return t');
-    ln('    end');
-    ln('');
-    ln('    m.LoadConfig = function(save)');
-    ln('        if type(save.FlingEnabled) == "table" then');
-    ln('            for k, v in pairs(save.FlingEnabled) do');
-    ln('                if m.FlingEnabled[k] ~= nil then m.FlingEnabled[k] = v end');
-    ln('            end');
-    ln('        end');
-    lnif(hbDebugOn, '        if save.HitboxDebug ~= nil then m.HitboxDebug = save.HitboxDebug end');
-    lnif(chatOn, '        if save.Notifications ~= nil then m.Notifications = save.Notifications end');
-    ln('    end');
-    ln('');
-    ln('    -- STATE');
-    ln('    local baseAnims    = {}');
-    ln('    local actionAnims  = {}');
-    ln('    local animJump     = nil');
-    ln('    local actionStart  = {}');
-    ln('    local currentBase   = "idle"');
-    ln('    local currentAction = nil');
-    ln('    local wasInAir      = false');
-    ln('    local flingActive   = false');
-    ln('    local touchConns    = {}');
-    ln('    local allJoints     = {}');
-    ln('    local figureRef     = nil');
-    ln('    local SPEED_WALK    = ' + speedWalk);
-    ln('    local SPEED_SPRINT  = ' + speedSprint);
-    lnif(hasSprint, '    local isSprinting   = false');
-    lnif(hasBg, '    local bgSound       = nil');
-    lnif(hasModes, '    local currentMode   = 0');
-    lnif(hasModes, '    local modeAnims     = {}');
-    lnif(chatOn, '    local chatConn      = nil');
-    if (hasLoop) { ln('    -- Per-animation sounds'); ln(loopDecls); }
-    ln('');
-    ln('    -- HELPERS');
-    ln('    local function makeSound(filename, parent, volume, looped)');
-    ln('        local s = Instance.new("Sound")');
-    ln('        s.SoundId = AssetGetContentId(filename)');
-    ln('        s.Volume  = volume or 0.8');
-    ln('        s.Looped  = looped or false');
-    ln('        s.Parent  = parent');
-    ln('        return s');
-    ln('    end');
-    ln('');
-    ln('    local function loadAnim(fig, file, looped)');
-    ln('        local a = AnimLib.Animator.new()');
-    ln('        a.rig    = fig');
-    ln('        a.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename(file))');
-    ln('        a.looped = looped or false');
-    ln('        a.speed  = 1');
-    ln('        a.weight = 0');
-    ln('        return a');
-    ln('    end');
-    ln('');
-    ln('    local function setSpeed(speed)');
-    ln('        if not figureRef then return end');
-    ln('        local hum = figureRef:FindFirstChildOfClass("Humanoid")');
-    ln('        if hum then hum.WalkSpeed = speed end');
-    ln('    end');
-    ln('');
-    ln('    local function clearBase()');
-    ln('        for _, a in pairs(baseAnims) do a.weight = 0 end');
-    if (hasModes) ln('        for _, mt in ipairs(modeAnims) do for _, a in pairs(mt) do if type(a)=="table" and a.weight then a.weight=0 end end end');
-    ln('    end');
-    ln('');
-    ln('    local function setBase(state)');
-    ln('        if currentBase == state then return end');
-    ln('        currentBase = state');
-    ln('        clearBase()');
-    if (hasModes) { ln(modeSetBaseExtra); }
-    ln('        if baseAnims[state] then baseAnims[state].weight = 1 end');
-    if (baseSoundSetBase) { ln('        -- Per-base audio'); ln(baseSoundSetBase); }
-    ln('    end');
-    ln('');
-    ln('    local function stopAllAnimSounds()');
-    ln(stopActSounds);
-    ln('    end');
-    ln('');
-    ln('    local function stopAction()');
-    ln('        for _, anim in pairs(actionAnims) do anim.weight = 0 end');
-    if (hasModes) ln('        for _, mt in ipairs(modeAnims) do for _, a in pairs(mt) do if type(a)=="table" and a.weight then a.weight=0 end end end');
-    ln('        stopAllAnimSounds()');
-    ln('        currentAction = nil');
-    ln('        flingActive   = false');
-    ln('    end');
-    ln('');
-    if (hasModes) {
-      ln('    local function bindDefaultAttacks()');
-      ln(bindDefaultAtksBody || '        -- no default attacks');
-      ln('    end');
-      ln('    local function unbindDefaultAttacks()');
-      ln(unbindDefaultAtksBody || '        -- no default attacks');
-      ln('    end');
-      ln('');
-    }
-    ln('    local function playAction(name)');
-    ln('        if currentAction then return end');
-    ln('        local a = actionAnims[name]');
-    ln('        if not a then return end');
-    ln('        stopAction()');
-    ln('        a.weight       = 1');
-    ln('        actionStart[a] = os.clock()');
-    ln('        currentAction  = name');
-    ln('        flingActive    = m.FlingEnabled[name] == true');
-    if (playActSound) { ln('        -- per-action audio'); ln(playActSound); }
-    actionA.forEach(a => {
-      if (!a.hbOn || !a.fling) return;
-      const delay = parseFloat(a.hbDur) || 0;
-      ln('        if name == "' + a.name + '" then');
-      if (delay > 0) ln('            task.delay(' + delay + ', function() fireHitbox("' + (a.hbAnchor||'HumanoidRootPart') + '", ' + (parseFloat(a.hbFwd)||0) + ', ' + (parseFloat(a.hbUp)||0) + ', "' + (a.hbShape||'Sphere') + '", ' + (parseFloat(a.hbRadius)||4) + ') end)');
-      else ln('            fireHitbox("' + (a.hbAnchor||'HumanoidRootPart') + '", ' + (parseFloat(a.hbFwd)||0) + ', ' + (parseFloat(a.hbUp)||0) + ', "' + (a.hbShape||'Sphere') + '", ' + (parseFloat(a.hbRadius)||4) + ')');
-      ln('        end');
-    });
-    ln('    end');
-    ln('');
-    if (hasModes) { ln(modeActionFn); }
-    if (hasSprint) {
-      ln('    local function toggleSprint()');
-      ln('        isSprinting = not isSprinting');
-      ln('        if isSprinting then');
-      ln('            setSpeed(SPEED_SPRINT)');
-      ln('            ContextActions:SetTitle("GM_Sprint", "' + spLW + '")');
-      ln('        else');
-      ln('            setSpeed(SPEED_WALK)');
-      ln('            ContextActions:SetTitle("GM_Sprint", "' + spLS + '")');
-      ln('        end');
-      ln('    end');
-      ln('');
-    }
-    ln('    local function setupFlingTouched(figure)');
-    ln('        local function hookPart(part)');
-    ln('            local conn = part.Touched:Connect(function(hit)');
-    ln('                if not flingActive then return end');
-    ln('                if not hit or not hit.Parent then return end');
-    ln('                local target = hit.Parent');
-    ln('                if target:IsA("Accessory") then target = target.Parent end');
-    ln('                if target == figure then return end');
-    ln('                if not target:FindFirstChildOfClass("Humanoid") then return end');
-    ln('                ReanimateFling(target)');
-    ln('            end)');
-    ln('            table.insert(touchConns, conn)');
-    ln('        end');
-    ln('        for _, part in ipairs(figure:GetDescendants()) do');
-    ln('            if part:IsA("BasePart") then hookPart(part) end');
-    ln('        end');
-    ln('        table.insert(touchConns, figure.DescendantAdded:Connect(function(part)');
-    ln('            if part:IsA("BasePart") then hookPart(part) end');
-    ln('        end))');
-    ln('    end');
-    ln('');
-    if (hasHitbox) ln(hitboxFn);
-    if (chatOn) {
-      ln('    -- Overhead chat text (HiddenGui typewriter)');
-      ln('    local function setupChat()');
-      ln('        chatConn = OnPlayerChatted(function(message)');
-      ln('            if not m.Notifications then return end');
-      ln('            local prefix = "' + chatPrefix + '"');
-      ln('            local text = Instance.new("TextLabel")');
-      ln('            text.Name = RandomString()');
-      ln('            text.Position = UDim2.new(0, 0, 0.95, 0)');
-      ln('            text.Size = UDim2.new(1, 0, 0.05, 0)');
-      ln('            text.BackgroundTransparency = 1');
-      ln('            text.Font = Enum.Font.GothamBold');
-      ln('            text.TextScaled = true');
-      ln('            text.TextColor3 = Color3.new(' + chatR + ', ' + chatG + ', ' + chatB + ')');
-      ln('            text.TextStrokeTransparency = ' + (chatStroke?'0':'1'));
-      ln('            text.TextXAlignment = Enum.TextXAlignment.Left');
-      ln('            text.Parent = HiddenGui');
-      ln('            task.spawn(function()');
-      ln('                local cps = ' + chatCPS);
-      ln('                local t = os.clock()');
-      ln('                local ll = 0');
-      ln('                repeat');
-      ln('                    task.wait()');
-      ln('                    local l = math.floor((os.clock() - t) * cps)');
-      ln('                    if l > ll then');
-      ln('                        ll = l');
-      ln('                        text.Text = prefix .. string.sub(message, 1, l)');
-      ln('                    end');
-      ln('                until ll >= #message');
-      ln('                text.Text = prefix .. message');
-      if (chatFade > 0) {
-        ln('                task.wait(' + chatFade + ')');
-        ln('                text:Destroy()');
-      }
-      ln('            end)');
-      ln('        end)');
-      ln('    end');
-      ln('');
-    }
-    ln('    -- INIT');
-    ln('    m.Init = function(figure)');
-    ln('        figureRef = figure');
-    ln('        local hrp = figure:FindFirstChild("HumanoidRootPart") or figure');
-    ln('        local hum = figure:FindFirstChildOfClass("Humanoid")');
-    ln('');
-    ln('        allJoints = {}');
-    ln('        for _, v in ipairs(figure:GetDescendants()) do');
-    ln('            if v:IsA("Motor6D") then table.insert(allJoints, v) end');
-    ln('        end');
-    ln('');
-    if (jumpPower.trim()) ln('        if hum then hum.JumpPower = ' + jumpPower + ' end');
-    if (!allowClimb) ln('        if hum then hum:SetStateEnabled(Enum.HumanoidStateType.Climbing, false) end');
-    ln('');
-    ln('        baseAnims = {');
-    ln(baseAnimsLua);
-    ln('        }');
-    ln('        animJump = baseAnims.jump');
-    if (actionA.length) { ln(''); ln('        actionAnims = {'); ln(actionAnimsLua); ln('        }'); }
-    if (hasBg) { ln(''); ln('        bgSound = makeSound("' + soundA[0].soundName + '", hrp, 0.5, true)'); ln('        bgSound:Play()'); }
-    if (hasLoop) { ln(''); ln('        -- init per-anim sounds'); ln(loopInits); }
-    if (hasModes) { ln(''); ln('        -- mode animation tables'); ln(modeAnimTables); }
-    if (chatOn) { ln(''); ln('        setupChat()'); }
-    ln('');
-    ln('        setSpeed(SPEED_WALK)');
-    ln('        setBase("idle")');
-    ln('        setupFlingTouched(figure)');
-    ln('');
-    if (hasSprint) {
-      ln('        ContextActions:BindAction("GM_Sprint", function(_, inputState, _)');
-      ln('            if inputState == Enum.UserInputState.Begin then toggleSprint() end');
-      ln('        end, true, Enum.KeyCode.' + spKey + ')');
-      ln('        ContextActions:SetTitle("GM_Sprint", "' + spLS + '")');
-      ln('        ContextActions:SetPosition("GM_Sprint", UDim2.new(' + spPX + ', ' + spOX + ', ' + spPY + ', ' + spOY + '))');
-      ln('');
-    }
-    if (hasModes) {
-      ln('        bindDefaultAttacks()');
-      ln(modeBinds);
-    } else {
-      if (btnBinds) ln(btnBinds);
-    }
-    ln('    end');
-    ln('');
-    ln('    -- UPDATE');
-    ln('    m.Update = function(dt, figure)');
-    ln('        local hum = figure:FindFirstChildOfClass("Humanoid")');
-    ln('        if not hum then return end');
-    ln('        local inAir = hum.FloorMaterial == Enum.Material.Air');
-    ln('');
-    ln('        if currentAction then');
-    if (hasModes) ln(modeActionUpdateCheck);
-    ln('            local a = actionAnims[currentAction]');
-    ln('            if a and actionStart[a] then');
-    ln('                local elapsed  = os.clock() - actionStart[a]');
-    ln('                local duration = a.track and a.track.Time or 0');
-    ln('                if duration > 0 and elapsed >= duration / (a.speed or 1) then');
-    ln('                    a.weight      = 0');
-    ln('                    stopAllAnimSounds()');
-    ln('                    currentAction = nil');
-    ln('                    flingActive   = false');
-    ln('                    currentBase   = "none"');
-    ln('                end');
-    ln('            end');
-    ln('        end');
-    ln('');
-    ln('        if not currentAction then');
-    ln('            if inAir then');
-    ln('                if not wasInAir then');
-    ln('                    clearBase()');
-    ln('                    currentBase           = "jump"');
-    ln('                    animJump.weight       = 1');
-    ln('                    actionStart[animJump] = os.clock()');
-    ln('                end');
-    ln('            else');
-    ln('                if wasInAir then animJump.weight = 0 end');
-    ln('                local moving = hum.MoveDirection.Magnitude > 0.1');
-    ln('                if moving then');
-    if (hasSprint) ln('                    if isSprinting then setBase("sprint") else setBase("walk") end');
-    else ln('                    setBase("walk")');
-    ln('                else');
-    ln('                    setBase("idle")');
-    ln('                end');
-    ln('            end');
-    ln('        end');
-    ln('');
-    ln('        wasInAir = inAir');
-    ln('        local now = os.clock()');
-    ln('        for _, a in pairs(baseAnims) do if a.weight > 0 then a:Step(now) end end');
-    if (hasModes) ln('        for _, mt in ipairs(modeAnims) do for _, a in pairs(mt) do if type(a)=="table" and a.weight and a.weight > 0 then a:Step(now) end end end');
-    ln('        for a, start in pairs(actionStart) do if a.weight > 0 then a:Step(now - start) end end');
-    ln('    end');
-    ln('');
-    ln('    -- DESTROY');
-    ln('    m.Destroy = function(figure)');
-    lnif(hasSprint, '        ContextActions:UnbindAction("GM_Sprint")');
-    if (hasModes) {
-      ln('        unbindDefaultAttacks()');
-      ln(modeUnbinds);
-      modes.forEach((mo,i) => mo.attacks.filter(a => a.name.trim()).forEach(a =>
-        ln('        ContextActions:UnbindAction("GM_M' + (i+1) + '_' + a.name + '")')
-      ));
-    } else {
-      if (btnUnbinds) ln(btnUnbinds);
-    }
-    ln('');
-    ln('        for _, conn in ipairs(touchConns) do conn:Disconnect() end');
-    ln('        table.clear(touchConns)');
-    ln('');
-    lnif(hasBg, '        if bgSound then bgSound:Stop() bgSound:Destroy() bgSound = nil end');
-    ln('        stopAllAnimSounds()');
-    if (hasLoop) ln(loopDestroys);
-    if (chatOn) ln('        if chatConn then chatConn:Disconnect() chatConn = nil end');
-    ln('');
-    ln('        for _, joint in ipairs(allJoints) do');
-    ln('            if joint and joint.Parent then joint.Transform = CFrame.identity end');
-    ln('        end');
-    ln('        allJoints = {}');
-    ln('');
-    ln('        for _, a in pairs(baseAnims)   do a.weight = 0 end');
-    ln('        for _, a in pairs(actionAnims) do a.weight = 0 end');
-    ln('');
-    ln('        setSpeed(16)');
-    ln('        actionStart   = {}');
-    ln('        currentAction = nil');
-    ln('        currentBase   = "idle"');
-    ln('        wasInAir      = false');
-    ln('        flingActive   = false');
-    ln('        figureRef     = nil');
-    ln('        animJump      = nil');
-    ln('        baseAnims     = {}');
-    ln('        actionAnims   = {}');
-    lnif(hasSprint, '        isSprinting = false');
-    if (hasModes) { ln('        currentMode = 0'); ln('        modeAnims   = {}'); }
-    ln('    end');
-    ln('');
-    ln('    return m');
-    ln('end)');
-    ln('');
-    ln('return modules');
-
-    _movesetCode = L.join('\n');
-
-    // Display moveset in preview
-    $('codeOut').textContent = _movesetCode;
-    $('codeOut2').textContent = _movesetCode;
-    $('codeOut2').style.color = '';
+  function renderMovement() {
+    return `
+      <div class="element">
+        <div class="element-info"><h3>Walk Speed</h3><p>Base movement speed</p></div>
+        <div class="element-control"><input class="field-input field-input-sm" type="number" id="speedWalk" value="16" min="1" style="width:80px"></div>
+      </div>
+      <div class="element">
+        <div class="element-info"><h3>Sprint Speed</h3><p>Speed when sprinting</p></div>
+        <div class="element-control"><input class="field-input field-input-sm" type="number" id="speedSprint" value="26" min="1" style="width:80px"></div>
+      </div>
+      <div class="element">
+        <div class="element-info"><h3>Jump Power</h3><p>Override jump height (leave blank for default)</p></div>
+        <div class="element-control"><input class="field-input field-input-sm" type="number" id="jumpPower" placeholder="default" step="1" style="width:100px"></div>
+      </div>
+      <div class="element">
+        <div class="element-info"><h3>Allow Climbing</h3><p>Enable/disable climbing</p></div>
+        <div class="element-control">
+          <label class="switch"><input type="checkbox" id="allowClimb" checked><span class="slider"></span></label>
+        </div>
+      </div>
+    `;
   }
 
-  function copyMovesetCode() {
-    if (!_movesetCode) generateMoveset();
-    navigator.clipboard.writeText(_movesetCode).then(() => showMsg('✓ Copied!')).catch(() => {
-      const el = $('codeOut2');
-      const r = document.createRange(); r.selectNodeContents(el);
-      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-      showMsg('Selected — Ctrl+C');
-    });
-  }
-  function showMsg(t) { const m = $('copyMsg'); m.textContent = t; m.style.display = ''; setTimeout(() => m.style.display = 'none', 2800); }
-  function downloadMovesetCode() {
-    if (!_movesetCode) generateMoveset();
-    const int = val('mInternal').trim().replace(/\s/g,'') || 'mymoveset';
-    const b = new Blob([_movesetCode], {type: 'text/plain'});
-    const u = URL.createObjectURL(b);
-    const a = document.createElement('a'); a.href = u; a.download = int + '.lua'; a.click();
-    URL.revokeObjectURL(u);
-  }
-
-  // -------- GENERATE EMOTE --------
-  function generateEmote() {
-    if (!selectedEmoteId) {
-      $('emoteCodeOut').textContent = '-- Please select an emote from the list above first.';
-      return;
-    }
-    const e = emotes.find(x => x.id === selectedEmoteId);
-    if (!e) {
-      $('emoteCodeOut').textContent = '-- Selected emote not found.';
-      return;
-    }
-
-    const ename = san(e.name || 'emote');
-    const fname = e.animFile || 'Rock.anim';
-    const mfile = e.musicFile || 'dance.mp3';
-    const mdesc = e.musicDesc || e.description || 'dance';
-    const vol = parseFloat(e.volume) || 0.8;
-    const st = parseFloat(e.startTime) || 0;
-    const et = parseFloat(e.endTime) || 45.5;
-
-    let lines = [];
-    lines.push('-- ' + ename + '.lua');
-    lines.push('-- Generated by Moveset Creator v6 (Emote)');
-    lines.push('-- Place in: UhhhhhhReanim/Modules/' + ename + '.lua');
-    lines.push('');
-    lines.push('local modules = {}');
-    lines.push('');
-    lines.push('table.insert(modules, function()');
-    lines.push('    local m = {}');
-    lines.push('    m.ModuleType  = "DANCE"');
-    lines.push('    m.Name        = "' + escLua(e.name || 'Emote') + '"');
-    lines.push('    m.Description = "' + escLua(e.description || '') + '"');
-    lines.push('    m.Assets = {"' + fname + '", "' + mfile + '"}');
-    lines.push('');
-    lines.push('    m.Config = function(parent)');
-    lines.push('        Util_CreateText(parent, "No settings.", 14, Enum.TextXAlignment.Center)');
-    lines.push('    end');
-    lines.push('');
-    lines.push('    m.SaveConfig = function() return {} end');
-    lines.push('    m.LoadConfig  = function(save) end');
-    lines.push('');
-    lines.push('    local animator = nil');
-    lines.push('    local start    = 0');
-    lines.push('');
-    lines.push('    m.Init = function(figure)');
-    lines.push('        SetOverrideDanceMusic(AssetGetContentId("' + mfile + '"), "' + escLua(mdesc) + '", ' + vol + ', NumberRange.new(' + st + ', ' + et + '))');
-    lines.push('');
-    lines.push('        start           = os.clock()');
-    lines.push('        animator        = AnimLib.Animator.new()');
-    lines.push('        animator.rig    = figure');
-    lines.push('        animator.track  = AnimLib.Track.fromfile(AssetGetPathFromFilename("' + fname + '"))');
-    lines.push('        animator.looped = true');
-    lines.push('        animator.speed  = 1');
-    lines.push('    end');
-    lines.push('');
-    lines.push('    m.Update = function(dt, figure)');
-    lines.push('        animator:Step(os.clock() - start)');
-    lines.push('    end');
-    lines.push('');
-    lines.push('    m.Destroy = function(figure)');
-    lines.push('        animator = nil');
-    lines.push('    end');
-    lines.push('');
-    lines.push('    return m');
-    lines.push('end)');
-    lines.push('');
-    lines.push('return modules');
-
-    _emoteCode = lines.join('\n');
-    $('emoteCodeOut').textContent = _emoteCode;
+  function renderSprint() {
+    return `
+      <div class="element">
+        <div class="element-info"><h3>Enable Sprint Toggle</h3><p>Add a sprint/walk toggle button</p></div>
+        <div class="element-control">
+          <label class="switch"><input type="checkbox" id="sprintOn" onchange="document.getElementById('sprintCfg').style.display=this.checked?'flex':'none'"><span class="slider"></span></label>
+        </div>
+      </div>
+      <div id="sprintCfg" style="display:none;flex-direction:column;gap:8px">
+        <div class="element">
+          <div class="element-info"><h3>Keybind</h3><p>Button to toggle sprint</p></div>
+          <div class="element-control"><div class="key-picker"><input class="field-input field-input-sm" id="spKey" value="LeftAlt" readonly onclick="openPicker('spKey')" style="width:100px"><button class="action-btn action-btn-secondary" onclick="openPicker('spKey')"><i class="fas fa-key"></i></button></div></div>
+        </div>
+        <div class="element">
+          <div class="element-info"><h3>Sprint Label</h3><p>Text when sprint is on</p></div>
+          <div class="element-control"><input class="field-input field-input-sm" id="spLS" value="Sprint" style="width:120px"></div>
+        </div>
+        <div class="element">
+          <div class="element-info"><h3>Walk Label</h3><p>Text when walk is on</p></div>
+          <div class="element-control"><input class="field-input field-input-sm" id="spLW" value="Walk" style="width:120px"></div>
+        </div>
+        <div class="grid-2">
+          <div class="element"><div class="element-info"><h3>Pos X</h3><p>Scale & offset</p></div><div class="element-control"><input class="field-input field-input-xs" type="number" id="spPX" value="1" step="0.01" style="width:60px"><input class="field-input field-input-xs" type="number" id="spOX" value="-260" step="1" style="width:70px"></div></div>
+          <div class="element"><div class="element-info"><h3>Pos Y</h3><p>Scale & offset</p></div><div class="element-control"><input class="field-input field-input-xs" type="number" id="spPY" value="1" step="0.01" style="width:60px"><input class="field-input field-input-xs" type="number" id="spOY" value="-130" step="1" style="width:70px"></div></div>
+        </div>
+      </div>
+    `;
   }
 
-  function copyEmoteCode() {
-    if (!_emoteCode) { generateEmote(); if (!_emoteCode) return; }
-    navigator.clipboard.writeText(_emoteCode).then(() => {
-      const m = $('emoteCopyMsg'); m.textContent = '✓ Copied!'; m.style.display = ''; setTimeout(() => m.style.display = 'none', 2800);
-    }).catch(() => {
-      const el = $('emoteCodeOut');
-      const r = document.createRange(); r.selectNodeContents(el);
-      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-      const m = $('emoteCopyMsg'); m.textContent = 'Selected — Ctrl+C'; m.style.display = ''; setTimeout(() => m.style.display = 'none', 2800);
-    });
-  }
-
-  function downloadEmoteCode() {
-    if (!_emoteCode) { generateEmote(); if (!_emoteCode) return; }
-    const e = emotes.find(x => x.id === selectedEmoteId);
-    const ename = e ? san(e.name || 'emote') : 'emote';
-    const b = new Blob([_emoteCode], {type: 'text/plain'});
-    const u = URL.createObjectURL(b);
-    const a = document.createElement('a'); a.href = u; a.download = ename + '.lua'; a.click();
-    URL.revokeObjectURL(u);
-  }
-
-  // -------- SEED --------
-  (function seed() {
-    addAsset('base'); let a = assets[assets.length-1]; a.name = 'idle mymoveset.anim'; a.baseRole = 'idle';
-    addAsset('base'); a = assets[assets.length-1]; a.name = 'walk mymoveset.anim'; a.baseRole = 'walk';
-    addAsset('base'); a = assets[assets.length-1]; a.name = 'jump mymoveset.anim'; a.baseRole = 'jump';
-    renderAssets(); renderModes(); renderEmotes();
-  })();
-</script>
-</body>
-</html>
+  function renderChat() {
+    return `
+      <div class="
