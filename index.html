@@ -20,7 +20,6 @@
             position: relative;
             overflow-x: hidden;
         }
-        /* Star Rain Canvas */
         #starRain {
             position: fixed;
             top: 0;
@@ -120,8 +119,9 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
         .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.7rem; }
-        @media (max-width: 700px) { .grid-4 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 500px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+        .grid-5 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 0.7rem; }
+        @media (max-width: 700px) { .grid-4, .grid-5 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 500px) { .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; } }
         .field { display: flex; flex-direction: column; gap: 0.2rem; }
         .field > label {
             font-size: 0.6rem;
@@ -290,6 +290,7 @@
         .badge-mode-atk { background: rgba(244, 114, 182, 0.12); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.2); }
         .badge-emote { background: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
         .badge-landing { background: rgba(96, 165, 250, 0.12); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
+        .badge-falling { background: rgba(251, 146, 60, 0.12); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.2); }
         .exp-btn {
             background: none;
             border: none;
@@ -423,13 +424,15 @@
             gap: 0.5rem;
             flex-wrap: wrap;
         }
-        .emote-row input { flex: 1; min-width: 100px; font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+        .emote-row input { flex: 1; min-width: 80px; font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+        .emote-row input.small { flex: 0.5; min-width: 60px; }
         .main-tabs {
             display: flex;
             gap: 0.5rem;
             padding: 0.5rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 0.5rem;
+            flex-wrap: wrap;
         }
         .main-tab {
             padding: 0.5rem 1.5rem;
@@ -447,6 +450,7 @@
         }
         .main-tab:hover { border-color: rgba(255, 255, 255, 0.3); color: #ffffff; }
         .main-tab.active { background: #a78bfa; border-color: #a78bfa; color: #000000; }
+        .main-tab.changelog-tab.active { background: #fbbf24; border-color: #fbbf24; color: #000000; }
         .section-hidden { display: none; }
         .section-visible { display: flex; flex-direction: column; gap: 1rem; }
         #starRain {
@@ -462,6 +466,25 @@
             position: relative;
             z-index: 1;
         }
+        .changelog-list { list-style: none; padding: 0; }
+        .changelog-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+        }
+        .changelog-list li:last-child { border-bottom: none; }
+        .changelog-date {
+            color: #a78bfa;
+            font-weight: 600;
+            min-width: 90px;
+            font-size: 0.7rem;
+        }
+        .changelog-msg { color: #cccccc; font-size: 0.8rem; }
+        .changelog-msg .fix { color: #34d399; }
+        .changelog-msg .new { color: #fbbf24; }
+        .changelog-msg .improve { color: #a78bfa; }
     </style>
 </head>
 <body>
@@ -478,10 +501,11 @@
         <div class="badge">v6 · generator</div>
     </header>
 
-    <!-- Main Tabs: Movesets / Emotes Only -->
+    <!-- Main Tabs -->
     <div class="main-tabs">
         <button class="main-tab active" id="tabMovesets" onclick="switchMainTab('movesets')">Movesets</button>
         <button class="main-tab" id="tabEmotes" onclick="switchMainTab('emotes')">Emotes Only</button>
+        <button class="main-tab changelog-tab" id="tabChangelog" onclick="switchMainTab('changelog')">📋 Changelog</button>
     </div>
 
     <!-- MOVESETS SECTION -->
@@ -595,7 +619,7 @@
                     <div class="field"><label>Landing Anim (filename)</label><input type="text" id="landingAnim" placeholder="landing.anim" value=""></div>
                     <div class="field"><label>Falling Anim (filename)</label><input type="text" id="fallingAnim" placeholder="falling.anim" value=""></div>
                 </div>
-                <div class="notice">These will play when the character lands from a jump or falls through the air.</div>
+                <div class="notice"><span class="badge badge-landing">landing</span> Plays once when landing from a jump. <span class="badge badge-falling">falling</span> Loops while falling through the air.</div>
             </div>
         </section>
 
@@ -642,10 +666,10 @@
         <section class="card">
             <div class="card-head"><span class="dot" style="background:#34d399;box-shadow:0 0 8px #34d399"></span><span class="card-title">Emotes Only <span style="font-weight:400;color:#888888;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">DANCE modules</span></span></div>
             <div class="card-body">
-                <div class="notice">Emotes are separate DANCE modules. Each emote has its own animation and optional music. Generate only emotes with the button below.</div>
+                <div class="notice">Emotes are separate DANCE modules. Each emote has its own animation and optional music with custom duration.</div>
                 <div class="emote-list" id="emoteListOnly"><div class="empty">No emotes yet — click "Add emote".</div></div>
                 <div class="btn-row"><button class="btn btn-green" onclick="addEmoteOnly()">+ Add emote</button></div>
-                <div class="notice" style="margin-top:0.5rem"><code>DANCE</code> modules use <code>SetOverrideDanceMusic</code> and looped animation.</div>
+                <div class="notice" style="margin-top:0.5rem"><code>DANCE</code> modules use <code>SetOverrideDanceMusic</code> with custom start/end times for music looping.</div>
                 <div class="btn-row" style="margin-top:0.5rem"><button class="btn btn-primary" onclick="generateEmotesOnly()">⚡ Generate Emotes Only</button></div>
             </div>
         </section>
@@ -658,6 +682,49 @@
                     <button class="btn btn-green" onclick="downloadEmotesCode()">↓ Download .lua</button>
                     <span class="copy-ok" id="copyMsgEmotes">✓ Copied!</span>
                 </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CHANGELOG SECTION -->
+    <div id="changelogSection" class="section-hidden">
+        <section class="card">
+            <div class="card-head"><span class="dot" style="background:#fbbf24;box-shadow:0 0 8px #fbbf24"></span><span class="card-title">Changelog</span></div>
+            <div class="card-body">
+                <ul class="changelog-list">
+                    <li>
+                        <span class="changelog-date">v1.7 - 2026</span>
+                        <span class="changelog-msg">
+                            <span class="new">● NEW:</span> Music duration controls for Emotes Only (start/end time)<br>
+                            <span class="new">● NEW:</span> Volume control for emote music<br>
+                            <span class="improve">● IMPROVED:</span> Better emote generation with custom ranges
+                        </span>
+                    </li>
+                    <li>
+                        <span class="changelog-date">v1.6 - 2026</span>
+                        <span class="changelog-msg">
+                            <span class="fix">● FIXED:</span> Jump animation now properly plays and loops<br>
+                            <span class="fix">● FIXED:</span> Landing animation now triggers when falling ends<br>
+                            <span class="new">● NEW:</span> Added Changelog tab to track updates<br>
+                            <span class="new">● NEW:</span> Falling animation support (loops while in air)
+                        </span>
+                    </li>
+                    <li>
+                        <span class="changelog-date">v1.5 - 2026</span>
+                        <span class="changelog-msg">
+                            <span class="improve">● IMPROVED:</span> Better animation state management<br>
+                            <span class="new">● NEW:</span> Emote module generator added
+                        </span>
+                    </li>
+                    <li>
+                        <span class="changelog-date">v1.0 - 2026</span>
+                        <span class="changelog-msg">
+                            <span class="new">● NEW:</span> Initial release with moveset creator<br>
+                            <span class="new">● NEW:</span> Mode system with up to 5 modes<br>
+                            <span class="new">● NEW:</span> Attack animations with fling and hitbox support
+                        </span>
+                    </li>
+                </ul>
             </div>
         </section>
     </div>
@@ -751,6 +818,24 @@
     const escLua = s => (s||'').replace(/"/g,'\\"');
     const san = s => (s||'').replace(/[^a-zA-Z0-9_]/g,'_') || 'x';
 
+    // -------- MAIN TAB SWITCH --------
+    function switchMainTab(tab) {
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section-visible, .section-hidden').forEach(s => {
+            s.className = 'section-hidden';
+        });
+        if (tab === 'movesets') {
+            document.getElementById('tabMovesets').classList.add('active');
+            document.getElementById('movesetsSection').className = 'section-visible';
+        } else if (tab === 'emotes') {
+            document.getElementById('tabEmotes').classList.add('active');
+            document.getElementById('emotesSection').className = 'section-visible';
+        } else {
+            document.getElementById('tabChangelog').classList.add('active');
+            document.getElementById('changelogSection').className = 'section-visible';
+        }
+    }
+
     // -------- KEY PICKER --------
     let _pickerTarget = null;
     function openPicker(id) {
@@ -769,20 +854,6 @@
         ).join('');
     }
     function pickKey(k) { if (_pickerTarget) $(_pickerTarget).value = k; closePicker(); }
-
-    // -------- MAIN TAB SWITCH --------
-    function switchMainTab(tab) {
-        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
-        if (tab === 'movesets') {
-            document.getElementById('tabMovesets').classList.add('active');
-            document.getElementById('movesetsSection').className = 'section-visible';
-            document.getElementById('emotesSection').className = 'section-hidden';
-        } else {
-            document.getElementById('tabEmotes').classList.add('active');
-            document.getElementById('movesetsSection').className = 'section-hidden';
-            document.getElementById('emotesSection').className = 'section-visible';
-        }
-    }
 
     // -------- UI HELPERS --------
     function switchTab(t) {
@@ -810,7 +881,10 @@
             name: 'NewEmote',
             animFile: '',
             audioFile: '',
-            description: ''
+            description: '',
+            volume: 0.8,
+            startTime: 0,
+            endTime: 45.5
         });
         renderEmotes();
     }
@@ -820,7 +894,10 @@
             name: 'NewEmote',
             animFile: '',
             audioFile: '',
-            description: ''
+            description: '',
+            volume: 0.8,
+            startTime: 0,
+            endTime: 45.5
         });
         renderEmotesOnly();
     }
@@ -840,8 +917,10 @@
                 <span class="badge badge-emote">DANCE</span>
                 <input type="text" placeholder="Emote name" value="${esc(e.name)}" oninput="setEmote(${e.id},'name',this.value)" style="min-width:100px;flex:1">
                 <input type="text" placeholder="filename.anim" value="${esc(e.animFile)}" oninput="setEmote(${e.id},'animFile',this.value)" style="min-width:120px;flex:1">
-                <input type="text" placeholder="music.mp3 (optional)" value="${esc(e.audioFile)}" oninput="setEmote(${e.id},'audioFile',this.value)" style="min-width:120px;flex:1">
-                <input type="text" placeholder="Description" value="${esc(e.description)}" oninput="setEmote(${e.id},'description',this.value)" style="min-width:100px;flex:1">
+                <input type="text" placeholder="music.mp3" value="${esc(e.audioFile)}" oninput="setEmote(${e.id},'audioFile',this.value)" style="min-width:120px;flex:1">
+                <input type="number" step="0.05" min="0" max="1" placeholder="Vol" value="${e.volume}" oninput="setEmote(${e.id},'volume',this.value)" style="min-width:50px;flex:0.5">
+                <input type="number" step="0.5" min="0" placeholder="Start" value="${e.startTime}" oninput="setEmote(${e.id},'startTime',this.value)" style="min-width:60px;flex:0.5">
+                <input type="number" step="0.5" min="0" placeholder="End" value="${e.endTime}" oninput="setEmote(${e.id},'endTime',this.value)" style="min-width:60px;flex:0.5">
                 <button class="btn btn-red" onclick="removeEmote(${e.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
             `;
             el.appendChild(div);
@@ -857,10 +936,13 @@
             div.className = 'emote-row';
             div.innerHTML = `
                 <span class="badge badge-emote">DANCE</span>
-                <input type="text" placeholder="Emote name" value="${esc(e.name)}" oninput="setEmoteOnly(${e.id},'name',this.value)" style="min-width:100px;flex:1">
-                <input type="text" placeholder="filename.anim" value="${esc(e.animFile)}" oninput="setEmoteOnly(${e.id},'animFile',this.value)" style="min-width:120px;flex:1">
-                <input type="text" placeholder="music.mp3 (optional)" value="${esc(e.audioFile)}" oninput="setEmoteOnly(${e.id},'audioFile',this.value)" style="min-width:120px;flex:1">
-                <input type="text" placeholder="Description" value="${esc(e.description)}" oninput="setEmoteOnly(${e.id},'description',this.value)" style="min-width:100px;flex:1">
+                <input type="text" placeholder="Emote name" value="${esc(e.name)}" oninput="setEmoteOnly(${e.id},'name',this.value)" style="min-width:80px;flex:1">
+                <input type="text" placeholder="filename.anim" value="${esc(e.animFile)}" oninput="setEmoteOnly(${e.id},'animFile',this.value)" style="min-width:100px;flex:1">
+                <input type="text" placeholder="music.mp3" value="${esc(e.audioFile)}" oninput="setEmoteOnly(${e.id},'audioFile',this.value)" style="min-width:100px;flex:1">
+                <input type="text" placeholder="Description" value="${esc(e.description)}" oninput="setEmoteOnly(${e.id},'description',this.value)" style="min-width:80px;flex:1">
+                <input type="number" step="0.05" min="0" max="1" placeholder="Vol" value="${e.volume}" oninput="setEmoteOnly(${e.id},'volume',this.value)" style="min-width:50px;flex:0.5">
+                <input type="number" step="0.5" min="0" placeholder="Start" value="${e.startTime}" oninput="setEmoteOnly(${e.id},'startTime',this.value)" style="min-width:55px;flex:0.5">
+                <input type="number" step="0.5" min="0" placeholder="End" value="${e.endTime}" oninput="setEmoteOnly(${e.id},'endTime',this.value)" style="min-width:55px;flex:0.5">
                 <button class="btn btn-red" onclick="removeEmoteOnly(${e.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
             `;
             el.appendChild(div);
@@ -1156,6 +1238,9 @@
                 const efile = e.animFile.trim() || ename + '.anim';
                 const audio = e.audioFile.trim() || '';
                 const edesc = e.description.trim() || ename;
+                const vol = parseFloat(e.volume) || 0.8;
+                const start = parseFloat(e.startTime) || 0;
+                const end = parseFloat(e.endTime) || 45.5;
                 emoteCode += `
         -- Emote: ${ename}
         table.insert(modules, function()
@@ -1172,7 +1257,7 @@
             local animator = nil
             local start    = 0
             m.Init = function(figure)
-                ${audio ? 'SetOverrideDanceMusic(AssetGetContentId("'+escLua(audio)+'"), "'+escLua(edesc)+'", 0.8, NumberRange.new(0, 45.5))' : ''}
+                ${audio ? 'SetOverrideDanceMusic(AssetGetContentId("'+escLua(audio)+'"), "'+escLua(edesc)+'", '+vol+', NumberRange.new('+start+', '+end+'))' : ''}
                 start           = os.clock()
                 animator        = AnimLib.Animator.new()
                 animator.rig    = figure
@@ -1807,7 +1892,7 @@
         $('codeOut2').style.color = '';
     }
 
-    // -------- GENERATE EMOTES ONLY --------
+    // -------- GENERATE EMOTES ONLY (with duration controls) --------
     let _emotesCode = '';
     function generateEmotesOnly() {
         const L = [];
@@ -1832,6 +1917,9 @@
                 const efile = e.animFile.trim() || ename + '.anim';
                 const audio = e.audioFile.trim() || '';
                 const edesc = e.description.trim() || ename;
+                const vol = parseFloat(e.volume) || 0.8;
+                const start = parseFloat(e.startTime) || 0;
+                const end = parseFloat(e.endTime) || 45.5;
                 ln('-- Emote: ' + ename);
                 ln('table.insert(modules, function()');
                 ln('    local m = {}');
@@ -1848,7 +1936,7 @@
                 ln('    local start    = 0');
                 ln('    m.Init = function(figure)');
                 if (audio) {
-                    ln('        SetOverrideDanceMusic(AssetGetContentId("' + escLua(audio) + '"), "' + escLua(edesc) + '", 0.8, NumberRange.new(0, 45.5))');
+                    ln('        SetOverrideDanceMusic(AssetGetContentId("' + escLua(audio) + '"), "' + escLua(edesc) + '", ' + vol + ', NumberRange.new(' + start + ', ' + end + '))');
                 }
                 ln('        start           = os.clock()');
                 ln('        animator        = AnimLib.Animator.new()');
