@@ -172,6 +172,8 @@
         .btn-purple:hover { background: rgba(167, 139, 250, 0.08); }
         .btn-red { border-color: rgba(248, 113, 113, 0.3); color: #f87171; }
         .btn-red:hover { background: rgba(248, 113, 113, 0.08); }
+        .btn-pink { border-color: rgba(244, 114, 182, 0.35); color: #f472b6; }
+        .btn-pink:hover { background: rgba(244, 114, 182, 0.08); }
         .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
         .toggle-wrap {
             display: flex;
@@ -291,6 +293,7 @@
         .badge-emote { background: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
         .badge-landing { background: rgba(96, 165, 250, 0.12); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
         .badge-falling { background: rgba(251, 146, 60, 0.12); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.2); }
+        .badge-spawn { background: rgba(167, 139, 250, 0.2); color: #a78bfa; border: 1px solid rgba(167, 139, 250, 0.3); }
         .exp-btn {
             background: none;
             border: none;
@@ -485,6 +488,19 @@
         .changelog-msg .fix { color: #34d399; }
         .changelog-msg .new { color: #fbbf24; }
         .changelog-msg .improve { color: #a78bfa; }
+        .spawn-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
+        .spawn-row {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .spawn-row input { flex: 1; min-width: 100px; font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+        .spawn-row input.small { flex: 0.5; min-width: 60px; }
     </style>
 </head>
 <body>
@@ -607,19 +623,25 @@
             </div>
         </section>
 
-        <!-- MOVESET: Modes + Actions + Landing/Falling -->
+        <!-- MOVESET: Modes + Actions + Landing/Falling + Spawn -->
         <section class="card">
-            <div class="card-head"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span><span class="card-title">Moveset <span style="font-weight:400;color:#888888;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">modes · actions · landing/falling</span></span></div>
+            <div class="card-head"><span class="dot" style="background:#f472b6;box-shadow:0 0 8px #f472b6"></span><span class="card-title">Moveset <span style="font-weight:400;color:#888888;font-size:0.6rem;text-transform:none;font-family:'JetBrains Mono'">modes · actions · landing/falling · spawn</span></span></div>
             <div class="card-body">
                 <div class="notice">Each mode has its own toggle button, optional transition anim, base anim overrides, and exclusive attacks.</div>
                 <div id="modeList"><div class="empty">No modes yet — click "Add mode".</div></div>
                 <div class="btn-row"><button class="btn btn-purple" onclick="addMode()">+ Add mode</button></div>
+
                 <div class="sub" style="margin-top:0.5rem">Landing & Falling Animations</div>
                 <div class="grid-2">
                     <div class="field"><label>Landing Anim (filename)</label><input type="text" id="landingAnim" placeholder="landing.anim" value=""></div>
                     <div class="field"><label>Falling Anim (filename)</label><input type="text" id="fallingAnim" placeholder="falling.anim" value=""></div>
                 </div>
                 <div class="notice"><span class="badge badge-landing">landing</span> Plays once when landing from a jump. <span class="badge badge-falling">falling</span> Loops while falling through the air.</div>
+
+                <div class="sub" style="margin-top:0.5rem">Spawn Animation</div>
+                <div class="notice">Spawn animations play when the character first appears. You can add multiple spawn animations that play in sequence.</div>
+                <div id="spawnList" class="spawn-list"><div class="empty">No spawn animations yet — click "Add spawn anim".</div></div>
+                <div class="btn-row"><button class="btn btn-pink" onclick="addSpawnAnim()">+ Add spawn anim</button></div>
             </div>
         </section>
 
@@ -693,11 +715,18 @@
             <div class="card-body">
                 <ul class="changelog-list">
                     <li>
+                        <span class="changelog-date">v1.8 - 2026</span>
+                        <span class="changelog-msg">
+                            <span class="new">● NEW:</span> Spawn animation support — add multiple spawn animations that play in sequence on character spawn<br>
+                            <span class="new">● NEW:</span> Spawn animation delay controls (time between each spawn animation)<br>
+                            <span class="improve">● IMPROVED:</span> Better animation state management for spawn sequences
+                        </span>
+                    </li>
+                    <li>
                         <span class="changelog-date">v1.7 - 2026</span>
                         <span class="changelog-msg">
                             <span class="new">● NEW:</span> Music duration controls for Emotes Only (start/end time)<br>
-                            <span class="new">● NEW:</span> Volume control for emote music<br>
-                            <span class="improve">● IMPROVED:</span> Better emote generation with custom ranges
+                            <span class="new">● NEW:</span> Volume control for emote music
                         </span>
                     </li>
                     <li>
@@ -707,13 +736,6 @@
                             <span class="fix">● FIXED:</span> Landing animation now triggers when falling ends<br>
                             <span class="new">● NEW:</span> Added Changelog tab to track updates<br>
                             <span class="new">● NEW:</span> Falling animation support (loops while in air)
-                        </span>
-                    </li>
-                    <li>
-                        <span class="changelog-date">v1.5 - 2026</span>
-                        <span class="changelog-msg">
-                            <span class="improve">● IMPROVED:</span> Better animation state management<br>
-                            <span class="new">● NEW:</span> Emote module generator added
                         </span>
                     </li>
                     <li>
@@ -806,6 +828,7 @@
     let modes = [];
     let emotes = [];
     let emotesOnly = [];
+    let spawnAnims = [];
     let nextId = 0;
     const uid = () => ++nextId;
 
@@ -873,6 +896,35 @@
         '<label class="toggle"><input type="checkbox" ' + (chk?'checked ':'') + ' onchange="' + onchange + '"><span class="toggle-slider"></span></label>';
     const keyPickerHtml = (fid, val) =>
         '<div class="key-picker"><input type="text" id="'+fid+'" value="'+esc(val)+'" readonly onclick="openPicker(\''+fid+'\')"><button class="btn btn-purple" onclick="openPicker(\''+fid+'\')">key</button></div>';
+
+    // -------- SPAWN ANIMATIONS --------
+    function addSpawnAnim() {
+        spawnAnims.push({
+            id: uid(),
+            animFile: '',
+            delay: 0.5
+        });
+        renderSpawnAnims();
+    }
+    function removeSpawnAnim(id) { spawnAnims = spawnAnims.filter(s => s.id !== id); renderSpawnAnims(); }
+    function setSpawnAnim(id, k, v) { const s = spawnAnims.find(x => x.id === id); if (s) s[k] = v; }
+
+    function renderSpawnAnims() {
+        const el = $('spawnList');
+        if (!spawnAnims.length) { el.innerHTML = '<div class="empty">No spawn animations yet — click "Add spawn anim".</div>'; return; }
+        el.innerHTML = '';
+        spawnAnims.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'spawn-row';
+            div.innerHTML = `
+                <span class="badge badge-spawn">spawn</span>
+                <input type="text" placeholder="filename.anim" value="${esc(s.animFile)}" oninput="setSpawnAnim(${s.id},'animFile',this.value)" style="min-width:120px;flex:1">
+                <input type="number" step="0.1" min="0" placeholder="Delay (s)" value="${s.delay}" oninput="setSpawnAnim(${s.id},'delay',this.value)" style="min-width:80px;flex:0.5">
+                <button class="btn btn-red" onclick="removeSpawnAnim(${s.id})" style="padding:0.2rem 0.6rem;font-size:0.65rem">×</button>
+            `;
+            el.appendChild(div);
+        });
+    }
 
     // -------- EMOTES (shared between both sections) --------
     function addEmote() {
@@ -1184,7 +1236,7 @@
         });
     }
 
-    // -------- GENERATE (Full Moveset) --------
+    // -------- GENERATE (Full Moveset with Spawn) --------
     let _code = '';
     function generate() {
         actionAssets().forEach(a => { const e = document.getElementById('ak_'+a.id); if (e) a.key = e.value || a.key; });
@@ -1228,6 +1280,7 @@
         const hasHitbox = actionA.some(a => a.hbOn && a.fling) || modes.some(mo => mo.attacks.some(a => a.hbOn && a.fling));
         const hasLanding = landingAnim !== '';
         const hasFalling = fallingAnim !== '';
+        const hasSpawn = spawnAnims.length > 0 && spawnAnims.some(s => s.animFile.trim());
 
         // EMOTES code generation (from main emotes list)
         let emoteCode = '';
@@ -1287,6 +1340,7 @@
             ...modes.flatMap(mo => [mo.transAnim, mo.idleAnim, mo.walkAnim, mo.sprintAnim, mo.jumpAnim].filter(Boolean)),
             ...(landingAnim ? [landingAnim] : []),
             ...(fallingAnim ? [fallingAnim] : []),
+            ...spawnAnims.map(s => s.animFile).filter(Boolean),
             ...emotes.flatMap(e => [e.animFile.trim(), e.audioFile.trim()].filter(Boolean))
         ];
         const uniqueFiles = [...new Set(allFiles)];
@@ -1558,6 +1612,11 @@
         lnif(chatOn, '    local chatConn      = nil');
         if (hasLanding) ln('    local landingAnim   = nil');
         if (hasFalling) ln('    local fallingAnim   = nil');
+        if (hasSpawn) {
+            ln('    local spawnAnims   = {}');
+            ln('    local spawnIndex   = 1');
+            ln('    local spawning     = true');
+        }
         if (hasLoop) { ln('    -- Per-animation sounds'); ln(loopDecls); }
         ln('');
         ln('    -- HELPERS');
@@ -1738,6 +1797,27 @@
         ln('        animJump = baseAnims.jump');
         if (hasLanding) ln('        landingAnim = loadAnim(figure, "' + landingAnim + '", false)');
         if (hasFalling) ln('        fallingAnim = loadAnim(figure, "' + fallingAnim + '", false)');
+        if (hasSpawn) {
+            ln('        -- Spawn animations');
+            spawnAnims.forEach((s, i) => {
+                const delay = parseFloat(s.delay) || 0.5;
+                ln('        spawnAnims[' + (i+1) + '] = {');
+                ln('            anim = loadAnim(figure, "' + s.animFile + '", false),');
+                ln('            delay = ' + delay);
+                ln('        }');
+            });
+            ln('        -- Play spawn animations in sequence');
+            ln('        task.spawn(function()');
+            ln('            for i, sa in ipairs(spawnAnims) do');
+            ln('                if sa.anim then');
+            ln('                    sa.anim.weight = 1');
+            ln('                    task.wait(sa.delay)');
+            ln('                    sa.anim.weight = 0');
+            ln('                end');
+            ln('            end');
+            ln('            spawning = false');
+            ln('        end)');
+        }
         if (actionA.length) { ln(''); ln('        actionAnims = {'); ln(actionAnimsLua); ln('        }'); }
         if (hasBg) { ln(''); ln('        bgSound = makeSound("' + soundA[0].soundName + '", hrp, 0.5, true)'); ln('        bgSound:Play()'); }
         if (hasLoop) { ln(''); ln('        -- init per-anim sounds'); ln(loopInits); }
@@ -1861,6 +1941,13 @@
         ln('        for _, a in pairs(actionAnims) do a.weight = 0 end');
         if (hasLanding) ln('        landingAnim = nil');
         if (hasFalling) ln('        fallingAnim = nil');
+        if (hasSpawn) {
+            ln('        for _, sa in ipairs(spawnAnims) do');
+            ln('            if sa.anim then sa.anim = nil end');
+            ln('        end');
+            ln('        spawnAnims = {}');
+            ln('        spawning = true');
+        }
         ln('');
         ln('        setSpeed(16)');
         ln('        actionStart   = {}');
@@ -1892,7 +1979,7 @@
         $('codeOut2').style.color = '';
     }
 
-    // -------- GENERATE EMOTES ONLY (with duration controls) --------
+    // -------- GENERATE EMOTES ONLY --------
     let _emotesCode = '';
     function generateEmotesOnly() {
         const L = [];
@@ -2013,7 +2100,7 @@
         addAsset('base'); let a = assets[assets.length-1]; a.name = 'idle mymoveset.anim'; a.baseRole = 'idle';
         addAsset('base'); a = assets[assets.length-1]; a.name = 'walk mymoveset.anim'; a.baseRole = 'walk';
         addAsset('base'); a = assets[assets.length-1]; a.name = 'jump mymoveset.anim'; a.baseRole = 'jump';
-        renderAssets(); renderModes(); renderEmotes(); renderEmotesOnly();
+        renderAssets(); renderModes(); renderEmotes(); renderEmotesOnly(); renderSpawnAnims();
     })();
 </script>
 </body>
